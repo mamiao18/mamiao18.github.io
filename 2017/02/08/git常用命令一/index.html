@@ -1,0 +1,934 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="git," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1. 安装 Github
+查看是否安装git:
+$ gitThe program ‘git’ is currently not installed.You can install it by typing: sudo apt-get install git&amp;nbsp;
+安装git命令：sudo apt-get install git （cenos使用yum install）
+&amp;nbsp;
+安装完成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git常用命令一">
+<meta property="og:url" content="http://merlinfeng.github.io/2017/02/08/git常用命令一/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="1. 安装 Github
+查看是否安装git:
+$ gitThe program ‘git’ is currently not installed.You can install it by typing: sudo apt-get install git&amp;nbsp;
+安装git命令：sudo apt-get install git （cenos使用yum install）
+&amp;nbsp;
+安装完成">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/220694-211fe3d4378c607d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.452Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="git常用命令一">
+<meta name="twitter:description" content="1. 安装 Github
+查看是否安装git:
+$ gitThe program ‘git’ is currently not installed.You can install it by typing: sudo apt-get install git&amp;nbsp;
+安装git命令：sudo apt-get install git （cenos使用yum install）
+&amp;nbsp;
+安装完成">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/220694-211fe3d4378c607d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2017/02/08/git常用命令一/"/>
+
+
+
+
+
+  <title> git常用命令一 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2017/02/08/git常用命令一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                git常用命令一
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-08T11:58:14+08:00">
+                2017-02-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WEB技术/" itemprop="url" rel="index">
+                    <span itemprop="name">WEB技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WEB技术/综合/" itemprop="url" rel="index">
+                    <span itemprop="name">综合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/08/git常用命令一/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/08/git常用命令一/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="1-安装-Github"><a href="#1-安装-Github" class="headerlink" title="1. 安装 Github"></a>1. 安装 Github</h4><hr>
+<p>查看是否安装git:</p>
+<p><pre class="lang:default decode:true ">$ git<br>The program ‘git’ is currently not installed.<br>You can install it by typing: sudo apt-get install git</pre><br>&nbsp;</p>
+<p>安装git命令：<strong>sudo apt-get install git （cenos使用yum install）</strong></p>
+<p>&nbsp;</p>
+<p>安装完成后，还需要最后一步设置，在命令行输入：</p>
+<p><pre class="lang:default decode:true ">$ git config –global user.name “Your Name”<br>$ git config –global user.email “[email@example.com]”</pre><br>&nbsp;</p>
+<blockquote>
+<p>因为Git是分布式版本控制系统，所以，每个机器都必须自报家门：你的名字和Email地址。你也许会担心，如果有人故意冒充别人怎么办？这个不必担心，首先我们相信大家都是善良无知的群众，其次，真的有冒充的也是有办法可查的。<br>注意git config 命令的–global参数，用了这个参数，表示你这台机器上所有的Git仓库都会使用这个配置，当然也可以对某个仓库指定不同的用户名和Email地址。</p>
+</blockquote>
+<h4 id="2-创建版本库"><a href="#2-创建版本库" class="headerlink" title="2. 创建版本库"></a>2. 创建版本库</h4><hr>
+<p>创建一个版本库非常简单，首先，选择一个合适的地方，创建一个空目录：</p>
+<p><pre class="lang:default decode:true ">$ mkdir learngit</pre><br>&nbsp;</p>
+<p><pre class="lang:default decode:true">$ cd learngit<br>$git init<br>Initialized empty Git repository in /Users/michael/learngit/.git/</pre><br>瞬间Git就把仓库建好了，而且告诉你是一个空的仓库（empty Git repository），细心的读者可以发现当前目录下多了一个.git的目录，这个目录是Git来跟踪管理版本库的，没事千万不要手动修改这个目录里面的文件，不然改乱了，就把Git仓库给破坏了。</p>
+<h4 id="3-把文件添加到版本库"><a href="#3-把文件添加到版本库" class="headerlink" title="3. 把文件添加到版本库"></a>3. 把文件添加到版本库</h4><hr>
+<p>首先这里再明确一下，所有的版本控制系统，其实只能跟踪文本文件的改动，比如TXT文件，网页，所有的程序代码等等，Git也不例外。</p>
+<p>版本控制系统可以告诉你每次的改动，比如在第5行加了一个单词“Linux”，在第8行删了一个单词“Windows”。而图片、视频这些二进制文件，虽然也能由版本控制系统管理，但没法跟踪文件的变化，只能把二进制文件每次改动串起来，也就是只知道图片从100KB改成了120KB，但到底改了啥，版本控制系统不知道，也没法知道。</p>
+<p>不幸的是，Microsoft的Word格式是二进制格式，因此，版本控制系统是没法跟踪Word文件的改动的，前面我们举的例子只是为了演示，如果要真正使用版本控制系统，就要以纯文本方式编写文件。</p>
+<p>现在我们编写一个readme.txt文件，内容如下：</p>
+<blockquote>
+<p>Git is a version control system. Git is free software.<br>一定要放到learngit目录下（子目录也行），因为这是一个Git仓库，放到其他地方Git再厉害也找不到这个文件。</p>
+</blockquote>
+<p>把一个文件放到Git仓库只需要两步:<br><strong>第一步</strong>，用命令<strong>git add</strong>告诉Git，把文件添加到仓库：</p>
+<p><pre class="lang:default decode:true ">$ git  add  readme.txt</pre><br>&nbsp;</p>
+<p>执行上面的命令，没有任何显示，这就对了，Unix的哲学是“没有消息就是好消息”，说明添加成功。<br><strong>第二步</strong>，用命令<strong>git commit</strong>告诉Git，把文件提交到仓库：</p>
+<p><pre class="lang:default decode:true ">$  git  commit -m  “wrote a readme file”<br>[master (root-commit) cb926e7] wrote a readme file 1 file changed, 2 insertions(+)<br>create mode 100644 readme.txt</pre><br>&nbsp;</p>
+<p>简单解释一下<strong>git commit</strong>命令: <strong>-m</strong>后面输入的是本次提交的说明，可以输入任意内容，当然最好是有意义的，这样你就能从历史记录里方便地找到改动记录。</p>
+<p><strong>git commit</strong>命令执行成功后会告诉你，1个文件被改动（我们新添加的readme.txt文件），插入了两行内容（readme.txt有两行内容）。</p>
+<p>为什么Git添加文件需要add，commit一共两步呢？<br>因为commit可以一次提交很多文件，所以你可以多次add不同的文件，比如：</p>
+<p><pre class="lang:default decode:true ">$ git add file1.txt<br>$ git add file2.txt file3.txt<br>$ git commit -m “add 3 files.”</pre><br>&nbsp;</p>
+<p><strong>git status</strong><br>命令可以让我们时刻掌握仓库当前的状态，上面的命令告诉我们，readme.txt被修改过了，但还没有准备提交的修改。</p>
+<p><pre class="lang:default decode:true ">$ git status </pre></p>
+<p>#On branch master </p>
+<h1 id="Changes-not-staged-for-commit-———-add之前，变化还没进入暂存区；"><a href="#Changes-not-staged-for-commit-———-add之前，变化还没进入暂存区；" class="headerlink" title="Changes not staged for commit:     ———-add之前，变化还没进入暂存区；"></a>Changes not staged for commit:     ———-add之前，变化还没进入暂存区；</h1><h1 id="use-“git-add-…”-to-update-what-will-be-committed"><a href="#use-“git-add-…”-to-update-what-will-be-committed" class="headerlink" title="(use “git add …” to update what will be committed)"></a>(use “git add …” to update what will be committed)</h1><h1 id="use-“git-checkout-–-…”-to-discard-changes-in-working-directory"><a href="#use-“git-checkout-–-…”-to-discard-changes-in-working-directory" class="headerlink" title="(use “git checkout – …” to discard changes in working directory)"></a>(use “git checkout – …” to discard changes in working directory)</h1><h1 id="modified-readme-txt-—此文件被修改"><a href="#modified-readme-txt-—此文件被修改" class="headerlink" title="modified:   readme.txt  —此文件被修改"></a>modified:   readme.txt  —此文件被修改</h1><p># </p>
+<h1 id="Untracked-files-—–此文件是新的，以前从未被提交过；"><a href="#Untracked-files-—–此文件是新的，以前从未被提交过；" class="headerlink" title="Untracked files:  —–此文件是新的，以前从未被提交过；"></a>Untracked files:  —–此文件是新的，以前从未被提交过；</h1><h1 id="use-“git-add-…”-to-include-in-what-will-be-committed"><a href="#use-“git-add-…”-to-include-in-what-will-be-committed" class="headerlink" title="(use “git add …” to include in what will be committed)"></a>(use “git add …” to include in what will be committed)</h1><h1 id="LICENSE"><a href="#LICENSE" class="headerlink" title="LICENSE"></a>LICENSE</h1><p>&nbsp;</p>
+<p>虽然Git告诉我们readme.txt被修改了，但如果能看看具体修改了什么内容，自然是很好的。<br>比如你休假两周从国外回来，第一天上班时，已经记不清上次怎么修改的readme.txt，所以，需要用<strong>git diff</strong>这个命令看看。</p>
+<p><strong>git diff</strong>顾名思义就是查看difference，显示的格式正是Unix通用的diff格式。</p>
+<p><pre class="lang:default decode:true ">$  git diff readme.txt<br>diff –git a/readme.txt b/readme.txt<br>index 46d49bf..9247db6 100644 — a/readme.txt +++ b/readme.txt<br> @@ -1,2 +1,2 @@ -Git is a version control system. –这一句没了<br>+Git is a distributed version control system. — 这一句是新加的 Git is free software. –这一句是原来就有的</pre><br>&nbsp;</p>
+<p>先把大量文件一次性add进来：<strong>git add *.py</strong>，然后你用<strong>git status</strong>查看，会有提示：</p>
+<p><pre class="lang:default decode:true ">$git status<br>Changes to be committed:<br>(use “git reset HEAD …” to unstage)<br>    new file:   1.py<br>    new file:   2.py<br>    new file:   3.py<br>    new file:   4.py</pre><br>&nbsp;</p>
+<p>要排除掉其中一个文件，用:<strong>git reset HEAD 1.py</strong><br>这时再用<code>git status</code>看，1.py变成了<strong>untracked</strong>，剩下的就可以提交了。</p>
+<h4 id="4，版本回退"><a href="#4，版本回退" class="headerlink" title="4，版本回退"></a>4，版本回退</h4><hr>
+<p><em>在实际工作中，我们脑子里怎么可能记得一个几千行的文件每次都改了什么内容，不然要版本控制系统干什么。</em></p>
+<p>版本控制系统肯定有某个命令可以告诉我们历史记录，在Git中，我们用<strong>git log</strong>命令查看；<br>git log命令显示从最近到最远的提交日志，我们可以看到3次提交，最近的一次是append GPL，上一次是add distributed，最早的一次是wrote a readme file。</p>
+<p>首先，Git必须知道当前版本是哪个版本，在Git中，用HEAD表示当前版本，也就是最新的提交3628164…882e1e0（注意:我的提交ID和你的肯不一在Git中），上一个版本就是HEAD^，上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100。</p>
+<p>现在，我们要把当前版本“append GPL”回退到上一个版本“add distributed”，就可以使用git reset<br>命令：</p>
+<p><pre class="lang:default decode:true ">$ <strong>git re**</strong>set–hard HEAD^**<br>HEAD is now at ea34578 add distributed</pre><br>&nbsp;</p>
+<p><code>$ cat readme.txt</code> 查看当前版本下，文件的内容；</p>
+<blockquote>
+<p>Git is a distributed version control system. Git is free software.<br>然我们用<strong>git log</strong>再看看现在版本库的状态：最新的那个版本append GPL已经看不到了；<br>想再回去已经回不去了，肿么办？办法其实还是有的，只要上面的命令行窗口还没有被关掉，你就可以顺着往上找啊找啊，找到那个append GPL的commit id是3628164…，于是就可以指定回到未来的某个版本：</p>
+<p><pre class="lang:default decode:true ">$ git re set –hard 3628164**<br>HEAD is now at 3628164 append GPL</pre><br>&nbsp;</p>
+</blockquote>
+<p>版本号没必要写全，前几位就可以了，Git会自动去找。当然也不能只写前一两位，因为Git可能会找到多个版本号，就无法确定是哪一个了。<br>在Git中，总是有后悔药可以吃的。当你用<code>$ git reset --hard HEAD^</code><br>回退到<code>add distributed</code>版本时，再想恢复到<code>append GPL</code>，就必须找到<code>append GPL</code>的<strong>commit id</strong>。Git提供了一个命令git reflog用来记录你的每一次命令：$ <strong>git reflog</strong></p>
+<p><pre class="lang:default decode:true ">$ <strong>git reflog</strong><br>ea34578 HEAD@{0}: reset: moving to HEAD^3628164<br>HEAD@{1}: commit: append GPLea34578<br>HEAD@{2}: commit: add distributedcb926e7<br>HEAD@{3}: commit (initial): wrote a readme file</pre><br>&nbsp;</p>
+<h4 id="5-工作区和暂存区"><a href="#5-工作区和暂存区" class="headerlink" title="5. 工作区和暂存区"></a>5. 工作区和暂存区</h4><hr>
+<blockquote>
+<p>Git和其他版本控制系统如SVN的一个不同之处就是有暂存区的概念。<br>先来看名词解释:<br><strong>工作区（Working Directory）</strong>就是你在电脑里能看到的目录，比如我的syzgit文件夹就是一个工作区.<br><strong>版本库（Repository）</strong>工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库。<br>Git的版本库里存了很多东西，其中最重要的就是称为<strong>stage（或者叫index）的暂存区</strong>，还有Git为我们自动创建的<strong>第一个分支master</strong>，以及指向master的一个指针叫<strong>HEAD</strong>。</p>
+<div class="image-package">
+
+</div></blockquote>
+<p><img src="http://upload-images.jianshu.io/upload_images/220694-211fe3d4378c607d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><div class="image-caption">git-repo</div><br><br>分支和HEAD的概念我们以后再讲。前面讲了我们把文件往Git版本库里添加的时候，是分两步执行的：<br><strong>第一步</strong>是用<strong>git add</strong> –&gt; 把文件添加进去，实际上就是把文件修改添加到暂存区<br><strong>第二步</strong>是用<strong>git commit</strong> –&gt; 提交更改，实际上就是把暂存区的所有内容提交到当前分支。</p>
+<p>因为我们创建Git版本库时，Git自动为我们创建了唯一一个master分支，所以，现在，<strong>git commit</strong>就是往<strong>master</strong>分支上提交更改。你可以简单理解为，需要提交的文件修改通通放到暂存区，然后，一次性提交暂存区的所有修改。</p>
+<h4 id="6，管理修改，撤销修改，删除文件"><a href="#6，管理修改，撤销修改，删除文件" class="headerlink" title="6，管理修改，撤销修改，删除文件"></a>6，管理修改，撤销修改，删除文件</h4><hr>
+<blockquote>
+<p>为什么Git比其他版本控制系统设计得优秀，因为<strong>Git跟踪并管理的是修改，而非文件</strong>。<br>你会问，什么是修改？<br><em>比如你新增了一行，这就是一个修改，删除了一行，也是一个修改，更改了某些字符，也是一个修改，删了一些又加了一些，也是一个修改，甚至创建一个新文件，也算一个修改。</em></p>
+</blockquote>
+<p><strong>Git管理的是修改</strong>，当你用<strong>git add</strong>命令后，在工作区的第一次修改被放入暂存区，准备提交，但是文件又被修改一次，在工作区的第二次修改并没有放入暂存区，所以此时直接用<strong>git commit</strong>只负责把暂存区的修改提交了，也就是第一次的修改被提交了，第二次的修改不会被提交。</p>
+<p>那怎么提交第二次修改呢？你可以继续<strong>git add</strong>再<strong>git commit</strong>，也可以别着急提交第一次修改，先<strong>git add</strong>第二次修改，再<strong>git commit</strong>，就相当于把两次修改合并后一块提交了：</p>
+<blockquote>
+<p>第一次修改 -&gt; git add-&gt; 第二次修改 -&gt; git add -&gt; git commit</p>
+<p><pre class="lang:default decode:true ">$ git status</pre></p>
+<h1 id="On-branch-master"><a href="#On-branch-master" class="headerlink" title="On branch master"></a>On branch master</h1><h1 id="Changes-not-staged-for-commit-—-add之前"><a href="#Changes-not-staged-for-commit-—-add之前" class="headerlink" title="Changes not staged for commit: — add之前"></a>Changes not staged for commit: — add之前</h1><h1 id="use-“git-add-…”-to-update-what-will-be-committed-1"><a href="#use-“git-add-…”-to-update-what-will-be-committed-1" class="headerlink" title="(use “git add …” to update what will be committed)"></a>(use “git add …” to update what will be committed)</h1><h1 id="use-“git-checkout-–-…”-to-discard-changes-in-working-directory-1"><a href="#use-“git-checkout-–-…”-to-discard-changes-in-working-directory-1" class="headerlink" title="(use “git checkout – …” to discard changes in working directory)"></a>(use “git checkout – …” to discard changes in working directory)</h1><h1 id="modified-readme-txt"><a href="#modified-readme-txt" class="headerlink" title="#       modified:   readme.txt"></a>#       modified:   readme.txt</h1><p>&nbsp;</p>
+</blockquote>
+<p>Git会告诉你，<strong>git checkout – file</strong> 可以丢弃工作区的修改：</p>
+<blockquote>
+<p><strong>$ git checkout </strong>–<strong> readme.txt 撤销工作区的修改 回到 暂存区/库版本</strong><br>命令<strong>git checkout – readme.txt</strong>意思就是，把readme.txt文件在<strong>工作区的修改全部撤销</strong>，<br>这里有两种情况：</p>
+<p>一种是readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；</p>
+<p>一种是readme.txt已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。<br>总之，就是让这个文件<strong>回到最近一次git commit或git add时的状态</strong>。</p>
+</blockquote>
+<p><strong>git checkout – file</strong>命令中的<strong>–</strong>很重要，没有–，就变成了“创建一个新分支”的命令，我们在后面的分支管理中会再次遇到<strong>git checkout</strong>命令。</p>
+<p>Git同样告诉我们，用命令<strong>git reset HEAD file</strong>，<strong>撤销暂存区的修改掉（unstage），重新放回工作区</strong><br><strong>git reset</strong>命令既可以回退版本，也可以把暂存区的修改回退到工作区。当我们用HEAD时表示最新的版本。</p>
+<blockquote>
+<p>场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout – file。</p>
+<p>场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD file，就回到了场景1，第二步按场景1操作。</p>
+<p>场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013744142037508cf42e51debf49668810645e02887691000" target="_blank" rel="external">版本回退</a>一节，不过前提是没有推送到远程库。<br>Git知道你删除了文件，因此，工作区和版本库就不一致了，<strong>git status</strong><br>命令会立刻告诉你哪些文件被删除了：</p>
+<p><pre class="lang:default decode:true ">$ git status</pre></p>
+<h1 id="On-branch-master-1"><a href="#On-branch-master-1" class="headerlink" title="On branch master"></a>On branch master</h1><h1 id="Changes-not-staged-for-commit"><a href="#Changes-not-staged-for-commit" class="headerlink" title="Changes not staged for commit:"></a>Changes not staged for commit:</h1><h1 id="use-“git-add-rm-…”-to-update-what-will-be-committed"><a href="#use-“git-add-rm-…”-to-update-what-will-be-committed" class="headerlink" title="(use “git add/rm …” to update what will be committed)"></a>(use “git add/rm …” to update what will be committed)</h1><h1 id="use-“git-checkout-–-…”-to-discard-changes-in-working-directory-2"><a href="#use-“git-checkout-–-…”-to-discard-changes-in-working-directory-2" class="headerlink" title="(use “git checkout – …” to discard changes in working directory)"></a>(use “git checkout – …” to discard changes in working directory)</h1><h1 id="deleted-test-txt-no-changes-added-to-commit-use-“git-add”-and-or-“git-commit-a”"><a href="#deleted-test-txt-no-changes-added-to-commit-use-“git-add”-and-or-“git-commit-a”" class="headerlink" title="deleted:    test.txt#no changes added to commit (use “git add” and/or “git commit -a”)"></a>deleted:    test.txt#no changes added to commit (use “git add” and/or “git commit -a”)</h1><p>&nbsp;</p>
+</blockquote>
+<p>现在你有两个选择，一是确实要从版本库中删除该文件，那就用命令git rm<br>删掉，并且<strong>git commit</strong>：</p>
+<p><pre class="lang:default decode:true ">$ git rm test.txt<br>$ git commit -m “remove test.txt”<br>[master d17efd8] remove test.txt 1 file changed, 1 deletion(-) delete mode 100644 test.txt</pre><br>&nbsp;</p>
+<p>现在，文件就从版本库中被删除了。</p>
+<blockquote>
+<p>另一种情况是删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本：</p>
+<p>$ <strong>git checkout – test.txt</strong></p>
+<p>git checkout其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以“一键还原”。</p>
+<p>命令<strong>git rm</strong>用于删除一个文件。如果一个文件已经被提交到版本库，那么你永远不用担心误删，但是要小心，你只能恢复文件到最新版本，你会丢失**最近一次提交后你修改的内容。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/24/redis之hyperloglog/" rel="next" title="Redis之HyperLogLog">
+                <i class="fa fa-chevron-left"></i> Redis之HyperLogLog
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/08/git常用命令二/" rel="prev" title="git常用命令二">
+                git常用命令二 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/08/git常用命令一/"
+     data-title="git常用命令一"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2017/02/08/git常用命令一/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/08/git常用命令一/"
+           data-title="git常用命令一" data-url="http://merlinfeng.github.io/2017/02/08/git常用命令一/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-安装-Github"><span class="nav-number">1.</span> <span class="nav-text">1. 安装 Github</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-创建版本库"><span class="nav-number">2.</span> <span class="nav-text">2. 创建版本库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-把文件添加到版本库"><span class="nav-number">3.</span> <span class="nav-text">3. 把文件添加到版本库</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Changes-not-staged-for-commit-———-add之前，变化还没进入暂存区；"><span class="nav-number"></span> <span class="nav-text">Changes not staged for commit:     ———-add之前，变化还没进入暂存区；</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-add-…”-to-update-what-will-be-committed"><span class="nav-number"></span> <span class="nav-text">(use “git add …” to update what will be committed)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-checkout-–-…”-to-discard-changes-in-working-directory"><span class="nav-number"></span> <span class="nav-text">(use “git checkout – …” to discard changes in working directory)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#modified-readme-txt-—此文件被修改"><span class="nav-number"></span> <span class="nav-text">modified:   readme.txt  —此文件被修改</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Untracked-files-—–此文件是新的，以前从未被提交过；"><span class="nav-number"></span> <span class="nav-text">Untracked files:  —–此文件是新的，以前从未被提交过；</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-add-…”-to-include-in-what-will-be-committed"><span class="nav-number"></span> <span class="nav-text">(use “git add …” to include in what will be committed)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LICENSE"><span class="nav-number"></span> <span class="nav-text">LICENSE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4，版本回退"><span class="nav-number">1.</span> <span class="nav-text">4，版本回退</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-工作区和暂存区"><span class="nav-number">2.</span> <span class="nav-text">5. 工作区和暂存区</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6，管理修改，撤销修改，删除文件"><span class="nav-number">3.</span> <span class="nav-text">6，管理修改，撤销修改，删除文件</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#On-branch-master"><span class="nav-number"></span> <span class="nav-text">On branch master</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Changes-not-staged-for-commit-—-add之前"><span class="nav-number"></span> <span class="nav-text">Changes not staged for commit: — add之前</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-add-…”-to-update-what-will-be-committed-1"><span class="nav-number"></span> <span class="nav-text">(use “git add …” to update what will be committed)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-checkout-–-…”-to-discard-changes-in-working-directory-1"><span class="nav-number"></span> <span class="nav-text">(use “git checkout – …” to discard changes in working directory)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#modified-readme-txt"><span class="nav-number"></span> <span class="nav-text">#       modified:   readme.txt</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#On-branch-master-1"><span class="nav-number"></span> <span class="nav-text">On branch master</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Changes-not-staged-for-commit"><span class="nav-number"></span> <span class="nav-text">Changes not staged for commit:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-add-rm-…”-to-update-what-will-be-committed"><span class="nav-number"></span> <span class="nav-text">(use “git add/rm …” to update what will be committed)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#use-“git-checkout-–-…”-to-discard-changes-in-working-directory-2"><span class="nav-number"></span> <span class="nav-text">(use “git checkout – …” to discard changes in working directory)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#deleted-test-txt-no-changes-added-to-commit-use-“git-add”-and-or-“git-commit-a”"><span class="nav-number"></span> <span class="nav-text">deleted:    test.txt#no changes added to commit (use “git add” and/or “git commit -a”)</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

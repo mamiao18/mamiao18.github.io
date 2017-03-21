@@ -1,0 +1,875 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MongoDB," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="刚刚接触MongoDB，惊讶于它对内存的贪得无厌，至于个中缘由，先了解下Linux是如何管理内存的，再说说MongoDB是如何使用内存的，答案自然就清楚了。
+首先查看MongoDB服务器的top命令结果：
+shell&amp;gt; top -p $(pidof mongod)Mem:  32872124k total, 30065320k used,  2806804k free,   245020k">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB内存篇">
+<meta property="og:url" content="http://merlinfeng.github.io/2017/02/23/mongodb内存篇/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="刚刚接触MongoDB，惊讶于它对内存的贪得无厌，至于个中缘由，先了解下Linux是如何管理内存的，再说说MongoDB是如何使用内存的，答案自然就清楚了。
+首先查看MongoDB服务器的top命令结果：
+shell&amp;gt; top -p $(pidof mongod)Mem:  32872124k total, 30065320k used,  2806804k free,   245020k">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.455Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB内存篇">
+<meta name="twitter:description" content="刚刚接触MongoDB，惊讶于它对内存的贪得无厌，至于个中缘由，先了解下Linux是如何管理内存的，再说说MongoDB是如何使用内存的，答案自然就清楚了。
+首先查看MongoDB服务器的top命令结果：
+shell&amp;gt; top -p $(pidof mongod)Mem:  32872124k total, 30065320k used,  2806804k free,   245020k">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2017/02/23/mongodb内存篇/"/>
+
+
+
+
+
+  <title> MongoDB内存篇 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2017/02/23/mongodb内存篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MongoDB内存篇
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-23T13:52:51+08:00">
+                2017-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/" itemprop="url" rel="index">
+                    <span itemprop="name">MongoDB</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/WEB技术/" itemprop="url" rel="index">
+                    <span itemprop="name">WEB技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/WEB技术/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/23/mongodb内存篇/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/23/mongodb内存篇/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>刚刚接触MongoDB，惊讶于它对内存的贪得无厌，至于个中缘由，先了解下Linux是如何管理内存的，再说说MongoDB是如何使用内存的，答案自然就清楚了。</p>
+<p>首先查看MongoDB服务器的top命令结果：</p>
+<p><pre>shell&gt; top -p $(pidof mongod)<br>Mem:  32872124k total, 30065320k used,  2806804k free,   245020k buffers<br>Swap:  2097144k total,      100k used,  2097044k free, 26482048k cached</pre></p>
+<p> VIRT  RES  SHR %MEM<br>1892g  21g  21g 69.6<br>这台MongoDB服务器有没有性能问题？大家可以一边思考一边继续阅读。</p>
+<h2 id="Linux是如何管理内存的"><a href="#Linux是如何管理内存的" class="headerlink" title="Linux是如何管理内存的"></a><span style="background-color: #ccffcc;"><strong>Linux是如何管理内存的</strong></span></h2><p>在Linux里（别的系统也差不多），内存有物理内存和<a href="http://en.wikipedia.org/wiki/Virtual_memory" target="_blank" rel="external">虚拟内存</a>之说，物理内存是什么自然无需解释，虚拟内存实际是物理内存的抽象，多数情况下，出于方便性的考虑，程序访问的都是虚拟内存地址，然后操作系统会通过<a href="http://en.wikipedia.org/wiki/Page_table" target="_blank" rel="external">Page Table</a>机制把它翻译成物理内存地址，详细说明可以参考<a href="http://www.ualberta.ca/CNS/RESEARCH/LinuxClusters/mem.html" target="_blank" rel="external">Understanding Memory</a>和<a href="http://www.redhat.com/magazine/001nov04/features/vm/" target="_blank" rel="external">Understanding Virtual Memory</a>，至于程序是如何使用虚拟内存的，可以参考<a href="http://www.snailinaturtleneck.com/blog/2011/08/30/playing-with-virtual-memory/" target="_blank" rel="external">Playing with Virtual Memory</a>，这里就不多费口舌了。</p>
+<p>很多人会把虚拟内存和Swap混为一谈，实际上Swap只是虚拟内存引申出的一种技术而已：操作系统一旦物理内存不足，为了腾出内存空间存放新内容，就会把当前物理内存中的内容放到交换分区里，稍后用到的时候再取回来，需要注意的是，Swap的使用可能会带来性能问题，偶尔为之无需紧张，糟糕的是物理内存和交换分区频繁的发生数据交换，这被称之为Swap颠簸，一旦发生这种情况，先要明确是什么原因造成的，如果是内存不足就好办了，加内存就可以解决，不过有的时候即使内存充足也可能会出现这种问题，比如MySQL就有可能出现这样的情况，一个可选的解决方法是限制使用Swap：</p>
+<p><pre>shell&gt; sysctl vm.swappiness=0</pre><br>查看内存情况最常用的是free命令：</p>
+<p><pre>shell&gt; free -m<br>             total       used       free     shared    buffers     cached<br>Mem:         32101      29377       2723          0        239      25880<br>-/+ buffers/cache:       3258      28842<br>Swap:         2047          0       2047</pre><br>看到used一栏数值偏大，free一栏数值偏小，往往会认为内存要用光了。其实并非如此，之所以这样是因为每当我们操作文件的时候，Linux都会尽可能的把文件缓存到内存里，这样下次访问的时候，就可以直接从内存中取结果，所以cached一栏的数值非常的大，不过不用担心，这部分内存是可回收的，操作系统的虚拟内存管理器会按照<a href="http://en.wikipedia.org/wiki/Cache_algorithms" target="_blank" rel="external">LRU</a>算法淘汰冷数据。还有一个buffers，也是可回收的，不过它是保留给块设备使用的。</p>
+<p>知道了原理，我们就可以推算出系统可用的内存是free + buffers + cached：</p>
+<p><pre>shell&gt; echo $((2723 + 239 + 25880))<br>28842</pre><br>至于系统实际使用的内存是used – buffers – cached：</p>
+<p><pre>shell&gt; echo $((29377 - 239 - 25880))<br>3258</pre><br>除了free命令，还可以使用sar命令：</p>
+<p><pre class="">shell&gt; sar -r<br>kbmemfree kbmemused  %memused kbbuffers  kbcached<br>  3224392  29647732     90.19    246116  26070160</pre></p>
+<p>shell&gt; sar -W<br>pswpin/s pswpout/s<br>    0.00      0.00<br>希望你没有被%memused吓到，如果不幸言中，重读本文。</p>
+<h2 id="再说说MongoDB是如何使用内存的"><a href="#再说说MongoDB是如何使用内存的" class="headerlink" title="再说说MongoDB是如何使用内存的"></a>再说说MongoDB是如何使用内存的</h2><p>目前，MongoDB使用的是<a href="http://www.mongodb.org/display/DOCS/Caching" target="_blank" rel="external">内存映射存储引擎</a>，它会把数据文件映射到内存中，如果是读操作，内存中的数据起到缓存的作用，如果是写操作，内存还可以把随机的写操作转换成顺序的写操作，总之可以大幅度提升性能。MongoDB并不干涉内存管理工作，而是把这些工作留给操作系统的虚拟内存管理器去处理，这样做的好处是简化了MongoDB的工作，但坏处是你没有方法很方便的控制MongoDB占多大内存，幸运的是虚拟内存管理器的存在让我们多数时候并不需要关心这个问题。</p>
+<p>MongoDB的内存使用机制让它在缓存重建方面更有优势，简而言之：如果重启进程，那么缓存依然有效，如果重启系统，那么可以通过拷贝数据文件到/dev/null的方式来重建缓存，更详细的描述请参考：<a href="http://blog.mongodb.org/post/10407828262/cache-reheating-not-to-be-ignored" target="_blank" rel="external">Cache Reheating – Not to be Ignored</a>。</p>
+<p>有时候，即便MongoDB使用的是64位操作系统，也可能会遭遇<a href="http://www.mongodb.org/display/DOCS/The+Linux+Out+of+Memory+OOM+Killer" target="_blank" rel="external">OOM</a>问题，出现这种情况，多半是因为限制了内存的大小所致，可以这样查看当前值：</p>
+<p><pre>shell&gt; ulimit -a | grep memory</pre><br>多数操作系统缺省都是把它设置成unlimited的，如果你的操作系统不是，可以这样修改：</p>
+<p><pre>shell&gt; ulimit -m unlimited<br>shell&gt; ulimit -v unlimited</pre><br>注：ulimit的使用是有上下文的，最好放在MongoDB的启动脚本里。</p>
+<p>有时候，MongoDB连接数过多的话，会<a href="http://groups.google.com/group/mongodb-user/browse_thread/thread/18e00ec181f8f377" target="_blank" rel="external">拖累性能</a>，可以通过<a href="http://www.mongodb.org/display/DOCS/serverStatus+Command" target="_blank" rel="external">serverStatus</a>查询连接数：</p>
+<p><pre>mongo&gt; db.serverStatus().connections</pre><br>每个连接都是一个线程，需要一个Stack，Linux下缺省的Stack设置一般比较大：</p>
+<p><pre>shell&gt; ulimit -a | grep stack<br>stack size              (kbytes, -s) 10240</pre><br>至于MongoDB实际使用的Stack大小，可以用如下命令确认（单位：K）：</p>
+<p><pre>shell&gt; cat /proc/$(pidof mongod)/limits | grep stack | awk -F ‘size’ ‘{print int($NF)/1024}’</pre><br>如果Stack过大（比如：10240K）的话没有意义，简单对照命令结果中的Size和Rss：</p>
+<p><pre>shell&gt; cat /proc/$(pidof mongod)/smaps | grep 10240 -A 10</pre><br>所有连接消耗的内存加起来会相当惊人，推荐把Stack设置小一点，比如说1024：</p>
+<p><pre>shell&gt; ulimit -s 1024</pre><br>注：从<a href="https://jira.mongodb.org/browse/SERVER/fixforversion/10390" target="_blank" rel="external">MongoDB1.8.3</a>开始，MongoDB会在启动时自动设置Stack。</p>
+<p>有时候，出于某些原因，你可能想释放掉MongoDB占用的内存，不过前面说了，内存管理工作是由虚拟内存管理器控制的，幸好可以使用MongoDB内置的<a href="http://www.mongodb.org/display/DOCS/List+of+Database+Commands" target="_blank" rel="external">closeAllDatabases</a>命令达到目的：</p>
+<p><pre>mongo&gt; use admin<br>mongo&gt; db.runCommand({closeAllDatabases:1})</pre><br>另外，通过调整内核参数<a href="http://www.kernel.org/doc/Documentation/sysctl/vm.txt" target="_blank" rel="external">drop_caches</a>也可以释放缓存：</p>
+<p><pre>shell&gt; sysctl vm.drop_caches=1</pre><br>平时可以通过mongo命令行来监控MongoDB的内存使用情况，如下所示：</p>
+<p><pre>mongo&gt; db.serverStatus().mem:<br>{<br>    “resident” : 22346,<br>    “virtual” : 1938524,<br>    “mapped” : 962283<br>}</pre><br>还可以通过<a href="http://www.mongodb.org/display/DOCS/mongostat" target="_blank" rel="external">mongostat</a>命令来监控MongoDB的内存使用情况，如下所示：</p>
+<p><pre>shell&gt; mongostat<br>mapped  vsize    res faults<br>  940g  1893g  21.9g      0</pre><br>其中内存相关字段的含义是：</p>
+<ul>
+<li>mapped：映射到内存的数据大小</li>
+<li>visze：占用的虚拟内存大小</li>
+<li>res：占用的物理内存大小<br>注：如果操作不能在内存中完成，结果faults列的数值不会是0，视大小可能有性能问题。</li>
+</ul>
+<p>在上面的结果中，vsize是mapped的两倍，而mapped等于数据文件的大小，所以说vsize是数据文件的两倍，之所以会这样，是因为本例中，MongoDB开启了<a href="http://www.mongodb.org/display/DOCS/Journaling" target="_blank" rel="external">journal</a>，需要在内存里多映射一次数据文件，如果关闭journal，则vsize和mapped大致相当。</p>
+<p>如果想验证这一点，可以在开启或关闭journal后，通过pmap命令来观察文件映射情况：</p>
+<p><pre>shell&gt; pmap $(pidof mongod)</pre><br>到底MongoDB配备多大内存合适？宽泛点来说，多多益善，如果要确切点来说，这实际取决于你的数据及索引的大小，内存如果能够装下全部数据加索引是最佳情况，不过很多时候，数据都会比内存大，比如本文所涉及的MongoDB实例：</p>
+<p><pre>mongo&gt; db.stats()<br>{<br>    “dataSize” : 1004862191980,<br>    “indexSize” : 1335929664<br>}</pre><br>本例中索引只有1G多，内存完全能装下，而数据文件则达到了1T，估计很难找到这么大内存，此时保证内存能装下热数据即可，至于热数据是多少，取决于具体的应用，你也可以通过观察faults的大小来判断当前内存是否能够装下热数据，如果faults持续变大，就说明当前内存已经不能满足热数据的大小了。如此一来内存大小就明确了：内存 &gt; 索引 + 热数据，最好有点富余，毕竟操作系统本身正常运转也需要消耗一部分内存。</p>
+<p>关于MongoDB与内存的话题，大家还可以参考<a href="http://www.mongodb.org/display/DOCS/Checking+Server+Memory+Usage" target="_blank" rel="external">官方文档</a>中的相关介绍。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MongoDB/" rel="tag"># MongoDB</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/19/php生成uuid/" rel="next" title="PHP生成UUID">
+                <i class="fa fa-chevron-left"></i> PHP生成UUID
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/24/mysql导入导出详解/" rel="prev" title="mysql导入导出详解">
+                mysql导入导出详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/23/mongodb内存篇/"
+     data-title="MongoDB内存篇"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2017/02/23/mongodb内存篇/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/23/mongodb内存篇/"
+           data-title="MongoDB内存篇" data-url="http://merlinfeng.github.io/2017/02/23/mongodb内存篇/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux是如何管理内存的"><span class="nav-number">1.</span> <span class="nav-text">Linux是如何管理内存的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#再说说MongoDB是如何使用内存的"><span class="nav-number">2.</span> <span class="nav-text">再说说MongoDB是如何使用内存的</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

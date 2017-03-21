@@ -1,0 +1,1340 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MongoDB,PHP,PHP7," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在应用PHP7时发现原来的mongo扩展已经被废弃，而是采用了新的mongodb扩展，这个扩展对应封装的方法包含三十多个类，具体区别见官方手册php.net搜索mongo和mongodb，
+原来应用对mongo的各种操作都不能用了，折腾了好几天，不停地翻阅手册，终于重新封装了一个mongodb扩展的类，可能还有不足欢迎指出！
+&amp;nbsp;
+&amp;lt;?php
+/**
+
+Created by PhpS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP封装mongdb扩展类(不是mongo)">
+<meta property="og:url" content="http://merlinfeng.github.io/2017/02/13/php封装mongdb扩展类不是mongo/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="在应用PHP7时发现原来的mongo扩展已经被废弃，而是采用了新的mongodb扩展，这个扩展对应封装的方法包含三十多个类，具体区别见官方手册php.net搜索mongo和mongodb，
+原来应用对mongo的各种操作都不能用了，折腾了好几天，不停地翻阅手册，终于重新封装了一个mongodb扩展的类，可能还有不足欢迎指出！
+&amp;nbsp;
+&amp;lt;?php
+/**
+
+Created by PhpS">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.454Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP封装mongdb扩展类(不是mongo)">
+<meta name="twitter:description" content="在应用PHP7时发现原来的mongo扩展已经被废弃，而是采用了新的mongodb扩展，这个扩展对应封装的方法包含三十多个类，具体区别见官方手册php.net搜索mongo和mongodb，
+原来应用对mongo的各种操作都不能用了，折腾了好几天，不停地翻阅手册，终于重新封装了一个mongodb扩展的类，可能还有不足欢迎指出！
+&amp;nbsp;
+&amp;lt;?php
+/**
+
+Created by PhpS">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2017/02/13/php封装mongdb扩展类不是mongo/"/>
+
+
+
+
+
+  <title> PHP封装mongdb扩展类(不是mongo) | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2017/02/13/php封装mongdb扩展类不是mongo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP封装mongdb扩展类(不是mongo)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-13T16:33:00+08:00">
+                2017-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/" itemprop="url" rel="index">
+                    <span itemprop="name">MongoDB</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/PHP/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MongoDB/PHP/数据库/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/13/php封装mongdb扩展类不是mongo/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/13/php封装mongdb扩展类不是mongo/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在应用PHP7时发现原来的mongo扩展已经被废弃，而是采用了新的mongodb扩展，这个扩展对应封装的方法包含三十多个类，具体区别见官方手册<a href="http://php.net/" target="_blank" rel="external">php.net</a>搜索mongo和mongodb，</p>
+<p>原来应用对mongo的各种操作都不能用了，折腾了好几天，不停地翻阅手册，终于重新封装了一个mongodb扩展的类，可能还有不足欢迎指出！</p>
+<p>&nbsp;</p>
+<p><pre class="height-set:true height:800 lang:php decode:true " title="PHP mongodb扩展类">&lt;?php</pre></p>
+<p>/**</p>
+<ul>
+<li>Created by PhpStorm.</li>
+<li>User: fengqiang</li>
+<li>Date: 2016/12/1</li>
+<li><p>Time: 18:30<br>*/<br>class mongodbdo<br>{<br> private $config;<br> private $host;<br> private $port = 27017;<br> private $database;<br> private $username;<br> private $password;<br> private $debug = false;</p>
+<p> private $collection = ‘’;<br> private $selects;<br> private $wheres;<br> private $updates;<br> private $limit = 9999999;<br> private $offset = 0;<br> private $sorts;</p>
+<p> private $manager;<br> private $result;</p>
+<p> public function __construct($config)<br> {</p>
+<pre><code>$this-&gt;config = $config;
+$this-&gt;connect();
+</code></pre><p> }</p>
+<p> /**</p>
+<ul>
+<li><p>预处理<br>*/<br>private function prepareConfig()<br>{<br> if (isset($this-&gt;config[‘host’])) {</p>
+<pre><code>$this-&gt;host = trim($this-&gt;config[&apos;host&apos;]);
+</code></pre><p> }<br> if (isset($this-&gt;config[‘port’])) {</p>
+<pre><code>$this-&gt;port = trim($this-&gt;config[&apos;port&apos;]);
+</code></pre><p> }<br> if (isset($this-&gt;config[‘username’])) {</p>
+<pre><code>$this-&gt;username = trim($this-&gt;config[&apos;username&apos;]);
+</code></pre><p> }<br> if (isset($this-&gt;config[‘password’])) {</p>
+<pre><code>$this-&gt;password = trim($this-&gt;config[&apos;password&apos;]);
+</code></pre><p> }<br> if (isset($this-&gt;config[‘dbname’])) {</p>
+<pre><code>$this-&gt;database = trim($this-&gt;config[&apos;dbname&apos;]);
+</code></pre><p> }<br> if (isset($this-&gt;config[‘db_debug’])) {</p>
+<pre><code>$this-&gt;debug = $this-&gt;config[&apos;db_debug&apos;];
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li><p>链接<br>*/<br>private function connect()<br>{<br> $this-&gt;prepareConfig();<br> try {</p>
+<pre><code>$dsn = &quot;mongodb://{$this-&gt;host}:{$this-&gt;port}/{$this-&gt;database}&quot;;
+/*$options = array(
+    &apos;username&apos; =&gt; $this-&gt;username,
+    &apos;password&apos; =&gt; $this-&gt;password
+);*/
+$options = array(&apos;connect&apos; =&gt; true,  &quot;socketTimeoutMS&quot; =&gt; 28800000000);
+$this-&gt;manager = new MongoDB\Driver\Manager($dsn, $options);
+</code></pre><p> } catch (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>获取当前连接</li>
+<li><p>@return mixed<br>*/<br>public function getManager()<br>{<br> return $this-&gt;manager;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param mixed $collection<br>*/<br>public function getCollection()<br>{<br> return $this-&gt;collection;<br>}</p>
+<p>/**</p>
+</li>
+<li>获取查询所需胡字段</li>
+<li><p>@return array<br>*/<br>public function getSelects()<br>{<br> return $this-&gt;selects;<br>}</p>
+<p>/**</p>
+</li>
+<li>获取条件</li>
+<li><p>@return array<br>*/<br>public function getWheres()<br>{<br> return $this-&gt;wheres;<br>}</p>
+<p>/**</p>
+</li>
+<li>获取更新内容</li>
+<li><p>@return array<br>*/<br>public function getUpdates()<br>{<br> return $this-&gt;updates;<br>}</p>
+<p>/**</p>
+</li>
+<li>获取条数</li>
+<li><p>@return int<br>*/<br>public function getLimit()<br>{<br> return $this-&gt;limit;<br>}</p>
+<p>/**</p>
+</li>
+<li>获取偏移量</li>
+<li><p>@return int<br>*/<br>public function getOffset()<br>{<br> return $this-&gt;offset;<br>}</p>
+<p>/**</p>
+</li>
+<li>获取排序</li>
+<li><p>@return array<br>*/<br>public function getSorts()<br>{<br> return $this-&gt;sorts;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param mixed $collection<br>*/<br>public function setCollection( $collection)<br>{<br> $this-&gt;collection = $collection;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param array $selects<br>*/<br>public function setSelects(array $selects)<br>{<br> $this-&gt;selects = $selects;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param array $wheres<br>*/<br>public function setWheres(array $wheres)<br>{<br> $this-&gt;wheres = $wheres;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param array $updates<br>*/<br>public function setUpdates(array $updates)<br>{<br> $this-&gt;updates = $updates;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param int $limit<br>*/<br>public function setLimit( $limit)<br>{<br> $this-&gt;limit = $limit;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param int $offset<br>*/<br>public function setOffset( $offset)<br>{<br> $this-&gt;offset = $offset;<br>}</p>
+<p>/**</p>
+</li>
+<li><p>@param array $sorts<br>*/<br>public function setSorts(array $sorts)<br>{<br> $this-&gt;sorts = $sorts;<br>}</p>
+<p>/**</p>
+</li>
+<li>@param $database</li>
+<li><p>@return $this<br>*/<br>public function switch_db($database)<br>{<br> $this-&gt;database = $database;<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>@param $table</li>
+<li><p>@return $this<br>*/<br>public function collection($collection)<br>{<br> $this-&gt;collection = $collection;<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>@param $collection</li>
+<li><p>@return Mongo_db<br>*/<br>public function table($collection)<br>{<br> return $this-&gt;collection($collection);<br>}</p>
+<p>/**</p>
+</li>
+<li>增</li>
+<li>@param array $document</li>
+<li>@param string $wstring</li>
+<li>@param int $wtimeout</li>
+<li><p>@return mixed<br>*/<br>public function insert(<br> $document = array(),<br> $wstring = \MongoDB\Driver\WriteConcern::MAJORITY,<br> $wtimeout = 1000)<br>{<br> try {</p>
+<pre><code>$wc = new \MongoDB\Driver\WriteConcern($wstring, $wtimeout);
+$bulk = new \MongoDB\Driver\BulkWrite();
+$bulk-&gt;insert($document);
+$dbc = $this-&gt;database . &apos;.&apos; . $this-&gt;collection;
+$result = $this-&gt;manager-&gt;executeBulkWrite($dbc, $bulk, $wc);
+$this-&gt;result = $result;
+//增加几条
+return $result-&gt;getInsertedCount();
+</code></pre><p> } catch (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>批量添加</li>
+<li>@param array $documents</li>
+<li>@param string $wstring</li>
+<li>@param int $wtimeout</li>
+<li><p>@return mixed<br>*/<br>public function batch_insert(<br> $documents = array(),<br> $wstring = \MongoDB\Driver\WriteConcern::MAJORITY,<br> $wtimeout = 1000)<br>{<br> try {</p>
+<pre><code>$wc = new \MongoDB\Driver\WriteConcern($wstring, $wtimeout);
+$bulk = new \MongoDB\Driver\BulkWrite();
+foreach ($documents as $k =&gt; $document) {
+    $bulk-&gt;insert($document);
+}
+$dbc = $this-&gt;database . &apos;.&apos; . $this-&gt;collection;
+$result = $this-&gt;manager-&gt;executeBulkWrite($dbc, $bulk, $wc);
+$this-&gt;result = $result;
+//增加几条
+return $result-&gt;getInsertedCount();
+</code></pre><p> } catch (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>删</li>
+<li>@param array $deleteOptions</li>
+<li>@param string $wstring</li>
+<li>@param int $wtimeout</li>
+<li><p>@return mixed<br>*/<br>public function delete(<br> $deleteOptions = [“limit” =&gt; 1],<br> $wstring = \MongoDB\Driver\WriteConcern::MAJORITY,<br> $wtimeout = 1000<br>)<br>{<br> try {</p>
+<pre><code>$wc = new \MongoDB\Driver\WriteConcern($wstring, $wtimeout);
+$bulk = new \MongoDB\Driver\BulkWrite();
+$filter = $this-&gt;wheres;
+if (count($filter) &lt; 1 &amp;&amp; $deleteOptions[&apos;limit&apos;] == 1) {
+    throw new \Exception(&apos;filter is error!&apos;);
+}
+$bulk-&gt;delete($filter, $deleteOptions);
+$dbc = $this-&gt;database . &apos;.&apos; . $this-&gt;collection;
+$result = $this-&gt;manager-&gt;executeBulkWrite($dbc, $bulk, $wc);
+$this-&gt;result = $result;
+//删除几条
+return $result-&gt;getDeletedCount();
+</code></pre><p> } catch<br> (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>删除所有</li>
+<li>@param array $deleteOptions</li>
+<li>@param string $wstring</li>
+<li>@param int $wtimeout</li>
+<li><p>@return mixed<br>*/<br>public function delete_all(<br> $deleteOptions = [“limit” =&gt; 0],<br> $wstring = \MongoDB\Driver\WriteConcern::MAJORITY,<br> $wtimeout = 1000<br>)<br>{<br> return $this-&gt;delete($deleteOptions, $wstring, $wtimeout);<br>}</p>
+<p>/**</p>
+</li>
+<li>更新</li>
+<li>@param array $updateOptions</li>
+<li>@param string $wstring</li>
+<li><p>@param int $wtimeout<br>*/<br>public function update(<br> $updateOptions = [‘multi’ =&gt; false, ‘upsert’ =&gt; false],<br> $wstring = \MongoDB\Driver\WriteConcern::MAJORITY,<br> $wtimeout = 1000<br>)<br>{<br> try {</p>
+<pre><code>$wc = new \MongoDB\Driver\WriteConcern($wstring, $wtimeout);
+$bulk = new \MongoDB\Driver\BulkWrite();
+$filter = $this-&gt;wheres;
+if (count($filter) &lt; 1 &amp;&amp; $updateOptions[&apos;multi&apos;] == false) {
+    throw new \Exception(&apos;filter is error!&apos;);
+}
+$newObj = $this-&gt;updates;
+$bulk-&gt;update(
+    $filter,
+    $newObj,
+    $updateOptions
+);
+$dbc = $this-&gt;database . &apos;.&apos; . $this-&gt;collection;
+$result = $this-&gt;manager-&gt;executeBulkWrite($dbc, $bulk, $wc);
+$this-&gt;result = $result;
+return $result-&gt;getModifiedCount();
+</code></pre><p> } catch (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>更新所有</li>
+<li>@param array $updateOptions</li>
+<li>@param string $wstring</li>
+<li><p>@param int $wtimeout<br>*/<br>public function update_all(<br> $updateOptions = [‘multi’ =&gt; true, ‘upsert’ =&gt; false],<br> $wstring = \MongoDB\Driver\WriteConcern::MAJORITY,<br> $wtimeout = 1000000<br>)<br>{<br> return $this-&gt;update($updateOptions, $wstring, $wtimeout);<br>}</p>
+<p>/**</p>
+</li>
+<li>查询单条</li>
+<li>@param null $id</li>
+<li><p>@return mixed|null<br>*/<br>public function find($id = null)<br>{<br> if ($id != null) {</p>
+<pre><code>$this-&gt;where(&apos;_id&apos;, new \MongoDB\BSON\ObjectID($id));
+</code></pre><p> }<br> $filter = $this-&gt;wheres;<br> $options = [</p>
+<pre><code>&apos;projection&apos; =&gt; $this-&gt;selects,
+&quot;sort&quot; =&gt; $this-&gt;sorts,
+&quot;skip&quot; =&gt; 0,
+&quot;limit&quot; =&gt; 1,
+</code></pre><p> ];<br> $query = new \MongoDB\Driver\Query($filter, $options);<br> $dbc = $this-&gt;database . ‘.’ . $this-&gt;collection;<br> $documents = $this-&gt;manager-&gt;executeQuery($dbc, $query);<br> $this-&gt;result = $documents;<br> $returns = null;<br> foreach ($documents as $document) {</p>
+<pre><code>$bson = \MongoDB\BSON\fromPHP($document);
+$returns = json_decode(\MongoDB\BSON\toJSON($bson), true);
+</code></pre><p> }<br> return $returns;<br>}</p>
+<p>public function findALL($argv = array(),$fields = array(),$sort = array(),$skip = 0, $limit = 0)<br>{<br> /*$argv = $this-&gt;validate($argv);</p>
+<p> if ($argv) {</p>
+<pre><code>$result = $this-&gt;_mongoDB-&gt;find($argv)
+-&gt;skip($skip)
+-&gt;limit($limit)
+-&gt;sort($sort);
+return self::toArray($result);
+</code></pre><p> }*/</p>
+<p> $options = array();</p>
+<p> if ($skip) {</p>
+<pre><code>$options[&apos;skip&apos;] = $skip;
+</code></pre><p> }</p>
+<p> if ($limit) {</p>
+<pre><code>$options[&apos;limit&apos;] = $limit;
+</code></pre><p> }</p>
+<p> if ($sort) {</p>
+<pre><code>$options[&apos;sort&apos;] = $sort;
+</code></pre><p> }</p>
+<p> if ($fields) {</p>
+<pre><code>if (is_string($fields)) {
+    $fields = explode(&apos;,&apos;, $fields);
+}
+
+foreach ($fields as $v) {
+    $options[&apos;projection&apos;][$v] = 1;
+}
+$options[&apos;projection&apos;][&apos;_id&apos;] = 0;
+</code></pre><p> }</p>
+<p> $query = new \MongoDB\Driver\Query($argv, $options);</p>
+<p> $cursor = $this-&gt;manager-&gt;executeQuery($this-&gt;database.’.’.$this-&gt;collection, $query);</p>
+<p> return $cursor-&gt;toArray();<br>}</p>
+<p>/**</p>
+</li>
+<li>command</li>
+<li>@param $db</li>
+<li>@param $commands</li>
+<li><p>@return mixed<br>*/<br>public function command($db, $commands)<br>{<br> $db = $db?$db:$this-&gt;database;<br> try {</p>
+<pre><code>if(is_array($commands))
+{
+   $commands = new \MongoDB\Driver\Command($commands);
+}
+$cursor = $this-&gt;manager-&gt;executeCommand($db, $commands);
+$this-&gt;result = $cursor;
+return $cursor;
+</code></pre><p> } catch (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>public function dropDatabase()<br>{<br> $cmd = array(</p>
+<pre><code>&apos;dropDatabase&apos; =&gt; 1,
+</code></pre><p> );<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command($cmd);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray());<br> return $response;<br>}</p>
+<p>public function drop()<br>{<br> $cmd = array(</p>
+<pre><code>&apos;drop&apos; =&gt; $this-&gt;collection,
+</code></pre><p> );<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command($cmd);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray());<br> return $response;<br>}<br>public function createCollections()<br>{<br> $cmd = array(</p>
+<pre><code>&apos;create&apos; =&gt; $this-&gt;collection,
+</code></pre><p> );<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command($cmd);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray());<br> return $response;<br>}</p>
+<p>//unique<br>public function add_index($key, $name = ‘index’)<br>{<br> $cmd = array(</p>
+<pre><code>&apos;createIndexes&apos; =&gt; $this-&gt;collection,
+&apos;indexes&apos; =&gt; array(
+    array(
+        &apos;name&apos; =&gt; $name,
+        &apos;key&apos; =&gt; $key,
+    )
+)
+</code></pre><p> );<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command($cmd);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray());<br> return $response;<br>}</p>
+<p>public function remove_index($index)<br>{<br> $cmd = array(</p>
+<pre><code>&apos;dropIndexes&apos; =&gt; $this-&gt;collection,
+&apos;index&apos; =&gt; $index
+</code></pre><p> );<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command($cmd);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray());<br> return $response;<br>}</p>
+<p>public function list_indexes()<br>{<br> $cmd = array(</p>
+<pre><code>&apos;listIndexes&apos; =&gt; $this-&gt;collection,
+</code></pre><p> );<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command($cmd);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> return $cursor;<br>}</p>
+<p>public function aggregate($commands, $allowDiskUse = false)<br>{<br> $db = $this-&gt;database;<br> $sql = [</p>
+<pre><code>&apos;aggregate&apos; =&gt; $this-&gt;collection,
+&apos;pipeline&apos; =&gt; $commands,
+&apos;allowDiskUse&apos; =&gt; $allowDiskUse,
+</code></pre><p> ];</p>
+<p> $commands = new \MongoDB\Driver\Command($sql);<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray())-&gt;result;<br> return $response;<br>}</p>
+<p>/**</p>
+</li>
+<li>@param $key</li>
+<li><p>@return mixed<br>*/<br>public function distinct($key)<br>{<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command(</p>
+<pre><code>[
+    &apos;distinct&apos; =&gt; $this-&gt;collection,
+    &apos;key&apos; =&gt; $key,
+    &apos;query&apos; =&gt; $this-&gt;wheres
+]
+</code></pre><p> );<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = current($cursor-&gt;toArray())-&gt;values;<br> return $response;<br>}</p>
+<p>/**</p>
+</li>
+<li>count</li>
+<li><p>@return mixed<br>*/<br>public function count()<br>{<br> $db = $this-&gt;database;<br> $commands = new \MongoDB\Driver\Command(</p>
+<pre><code>[
+    &quot;count&quot; =&gt; $this-&gt;collection,
+    &quot;query&quot; =&gt; $this-&gt;wheres
+]
+</code></pre><p> );<br> $cursor = $this-&gt;command($db, $commands);<br> $this-&gt;result = $cursor;<br> $response = $cursor-&gt;toArray()[0];<br> return $response-&gt;n;<br>}</p>
+<p>/**</p>
+</li>
+<li>查</li>
+<li><p>@return mixed<br>*/<br>public function get()<br>{<br> try {</p>
+<pre><code>$filter = (array)$this-&gt;wheres;
+$options = [
+    &apos;projection&apos; =&gt; (array)$this-&gt;selects,
+    &quot;sort&quot; =&gt; (array)$this-&gt;sorts,
+    &quot;skip&quot; =&gt; (int)$this-&gt;offset,
+    &quot;limit&quot; =&gt; (int)$this-&gt;limit,
+];
+$query = new \MongoDB\Driver\Query($filter, $options);
+$dbc = $this-&gt;database . &apos;.&apos; . $this-&gt;collection;
+$documents = $this-&gt;manager-&gt;executeQuery($dbc, $query);
+$this-&gt;result = $documents;
+$returns = array();
+foreach ($documents as $document) {
+    $bson = \MongoDB\BSON\fromPHP($document);
+    $returns[] = json_decode(\MongoDB\BSON\toJSON($bson), true);
+}
+return $returns;
+</code></pre><p> } catch (\Exception $e) {</p>
+<pre><code>$this-&gt;showError($e);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>@param $fields</li>
+<li>@param null $value</li>
+<li><p>@return $this<br>*/<br>public function set($fields, $value = NULL)<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$set&apos;][$fields] = $value;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field =&gt; $value) {
+    $this-&gt;updates[&apos;$set&apos;][$field] = $value;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>要获取的字段</li>
+<li>@param $wheres</li>
+<li>@param null $value</li>
+<li><p>@return $this<br>*/<br>public function field($includes = array(), $excludes = array())<br>{<br> if (!is_array($includes)) {</p>
+<pre><code>$includes = array();
+</code></pre><p> }<br> if (!is_array($excludes)) {</p>
+<pre><code>$excludes = array();
+</code></pre><p> }<br> if (!empty($includes)) {</p>
+<pre><code>foreach ($includes as $col) {
+    $this-&gt;selects[$col] = 1;
+}
+</code></pre><p> }<br> if (!empty($excludes)) {</p>
+<pre><code>foreach ($excludes as $col) {
+    $this-&gt;selects[$col] = 0;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>条件</li>
+<li>@param $wheres</li>
+<li>@param null $value</li>
+<li><p>@return $this<br>*/<br>public function where($wheres, $value = null)<br>{<br> if (is_array($wheres)) {</p>
+<pre><code>foreach ($wheres as $wh =&gt; $val) {
+    $this-&gt;wheres[$wh] = $val;
+}
+</code></pre><p> } else {</p>
+<pre><code>$this-&gt;wheres[$wheres] = $value;
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function where_in($field = “”, $in = array())<br>{<br> $this-&gt;wheres[$field][‘$in’] = $in;<br> return $this;<br>}</p>
+<p>public function where_in_all($field = “”, $in = array())<br>{<br> $this-&gt;wheres[$field][‘$all’] = $in;<br> return $this;<br>}</p>
+<p>public function where_or($wheres = array())<br>{<br> foreach ($wheres as $wh =&gt; $val) {</p>
+<pre><code>$this-&gt;wheres[&apos;$or&apos;][] = array($wh =&gt; $val);
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function where_not_in($field = “”, $in = array())<br>{<br> $this-&gt;wheres[$field][‘$nin’] = $in;<br> return $this;<br>}</p>
+<p>public function where_gt($field = “”, $x)<br>{<br> $this-&gt;wheres[$field][‘$gt’] = $x;<br> return $this;<br>}</p>
+<p>public function where_gte($field = “”, $x)<br>{<br> $this-&gt;wheres[$field][‘$gte’] = $x;<br> return $this;<br>}</p>
+<p>public function where_lt($field = “”, $x)<br>{<br> $this-&gt;wheres[$field][‘$lt’] = $x;<br> return $this;<br>}</p>
+<p>public function where_lte($field = “”, $x)<br>{<br> $this-&gt;wheres[$field][‘$lte’] = $x;<br> return $this;<br>}</p>
+<p>public function where_between($field = “”, $x, $y)<br>{<br> $this-&gt;wheres[$field][‘$gte’] = $x;<br> $this-&gt;wheres[$field][‘$lte’] = $y;<br> return $this;<br>}</p>
+<p>public function where_between_ne($field = “”, $x, $y)<br>{<br> $this-&gt;wheres[$field][‘$gt’] = $x;<br> $this-&gt;wheres[$field][‘$lt’] = $y;<br> return $this;<br>}</p>
+<p>public function where_ne($field = ‘’, $x)<br>{<br> $this-&gt;wheres[$field][‘$ne’] = $x;<br> return $this;<br>}</p>
+<p>public function push($fields, $value = array())<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$push&apos;][$fields] = $value;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field =&gt; $value) {
+    $this-&gt;updates[&apos;$push&apos;][$field] = $value;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function addtoset($field, $values)<br>{<br> if (is_string($values)) {</p>
+<pre><code>$this-&gt;updates[&apos;$addToSet&apos;][$field] = $values;
+</code></pre><p> } elseif (is_array($values)) {</p>
+<pre><code>$this-&gt;updates[&apos;$addToSet&apos;][$field] = array(&apos;$each&apos; =&gt; $values);
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function pop($field)<br>{<br> if (is_string($field)) {</p>
+<pre><code>$this-&gt;updates[&apos;$pop&apos;][$field] = -1;
+</code></pre><p> } elseif (is_array($field)) {</p>
+<pre><code>foreach ($field as $pop_field) {
+    $this-&gt;updates[&apos;$pop&apos;][$pop_field] = -1;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function pull($field = “”, $value = array())<br>{<br> $this-&gt;updates[‘$pull’] = array($field =&gt; $value);<br> return $this;<br>}</p>
+<p>public function rename_field($old, $new)<br>{<br> $this-&gt;updates[‘$rename’] = array($old =&gt; $new);<br> return $this;<br>}</p>
+<p>public function unset_field($fields)<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$unset&apos;][$fields] = 1;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field) {
+    $this-&gt;updates[&apos;$unset&apos;][$field] = 1;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function inc($fields = array(), $value = 0)<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$inc&apos;][$fields] = $value;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field =&gt; $value) {
+    $this-&gt;updates[&apos;$inc&apos;][$field] = $value;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function mul($fields = array(), $value = 0)<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$mul&apos;][$fields] = $value;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field =&gt; $value) {
+    $this-&gt;updates[&apos;$mul&apos;][$field] = $value;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function max($fields = array(), $value = 0)<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$max&apos;][$fields] = $value;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field =&gt; $value) {
+    $this-&gt;updates[&apos;$max&apos;][$field] = $value;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>public function min($fields = array(), $value = 0)<br>{<br> if (is_string($fields)) {</p>
+<pre><code>$this-&gt;updates[&apos;$min&apos;][$fields] = $value;
+</code></pre><p> } elseif (is_array($fields)) {</p>
+<pre><code>foreach ($fields as $field =&gt; $value) {
+    $this-&gt;updates[&apos;$min&apos;][$field] = $value;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>排序</li>
+<li>@param array $fields</li>
+<li><p>@return $this<br>*/<br>public function order_by($fields = array())<br>{<br> foreach ($fields as $col =&gt; $val) {</p>
+<pre><code>if ($val == -1 || $val === FALSE || strtolower($val) == &apos;desc&apos;) {
+    $this-&gt;sorts[$col] = -1;
+} else {
+    $this-&gt;sorts[$col] = 1;
+}
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>条数</li>
+<li>@param int $x</li>
+<li><p>@return $this<br>*/<br>public function limit($x = 99999)<br>{<br> if ($x !== NULL &amp;&amp; is_numeric($x) &amp;&amp; $x &gt;= 1) {</p>
+<pre><code>$this-&gt;limit = (int)$x;
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>偏移量</li>
+<li>@param int $x</li>
+<li><p>@return $this<br>*/<br>public function offset($x = 0)<br>{<br> if ($x !== NULL &amp;&amp; is_numeric($x) &amp;&amp; $x &gt;= 1) {</p>
+<pre><code>$this-&gt;offset = (int)$x;
+</code></pre><p> }<br> return $this;<br>}</p>
+<p>/**</p>
+</li>
+<li>生成mongo时间</li>
+<li>@param bool $stamp</li>
+<li><p>@return \MongoDB\BSON\UTCDatetime<br>*/<br>public function date($stamp = false)<br>{<br> if ($stamp == false) {</p>
+<pre><code>return new \MongoDB\BSON\UTCDatetime(time() * 1000);
+</code></pre><p> } else {</p>
+<pre><code>return new \MongoDB\BSON\UTCDatetime($stamp);
+</code></pre><p> }</p>
+<p>}</p>
+<p>/**</p>
+</li>
+<li>生成mongo时间戳</li>
+<li>@param bool $stamp</li>
+<li><p>@return \MongoDB\BSON\Timestamp<br>*/<br>public function timestamp($stamp = false)<br>{<br> if ($stamp == false) {</p>
+<pre><code>return new \MongoDB\BSON\Timestamp(0, time());
+</code></pre><p> } else {</p>
+<pre><code>return new \MongoDB\BSON\Timestamp(0, $stamp);
+</code></pre><p> }<br>}</p>
+<p>/**</p>
+</li>
+<li>抛出异常</li>
+<li>@param $e<br>*/<br>public function showError($e)<br>{<br> exit($e-&gt;getMessage());<br>}<br>}<br>&nbsp;</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MongoDB/" rel="tag"># MongoDB</a>
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/PHP7/" rel="tag"># PHP7</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/13/php快速分析日志/" rel="next" title="php快速分析日志">
+                <i class="fa fa-chevron-left"></i> php快速分析日志
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/13/mysql-主从复制与读写分离概念及架构分析/" rel="prev" title="MySQL主从复制与读写分离介绍及原理">
+                MySQL主从复制与读写分离介绍及原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/13/php封装mongdb扩展类不是mongo/"
+     data-title="PHP封装mongdb扩展类(不是mongo)"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2017/02/13/php封装mongdb扩展类不是mongo/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/13/php封装mongdb扩展类不是mongo/"
+           data-title="PHP封装mongdb扩展类(不是mongo)" data-url="http://merlinfeng.github.io/2017/02/13/php封装mongdb扩展类不是mongo/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

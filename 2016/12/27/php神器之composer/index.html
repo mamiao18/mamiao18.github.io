@@ -1,0 +1,921 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP,composer," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Composer是一个非常流行的PHP包依赖管理工具,已经取代PEAR包管理器,对于PHP开发者来说掌握Composer是必须的.
+对于使用者来说Composer非常的简单,通过简单的一条命令将需要的代码包下载到vendor目录下,然后开发者就可以引入包并使用了.
+其中的关键在于你项目定义的composer.json,可以定义项目需要依赖的包(可能有多个),而依赖的包可能又依赖其他的包(这就是组件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP神器之Composer">
+<meta property="og:url" content="http://merlinfeng.github.io/2016/12/27/php神器之composer/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="Composer是一个非常流行的PHP包依赖管理工具,已经取代PEAR包管理器,对于PHP开发者来说掌握Composer是必须的.
+对于使用者来说Composer非常的简单,通过简单的一条命令将需要的代码包下载到vendor目录下,然后开发者就可以引入包并使用了.
+其中的关键在于你项目定义的composer.json,可以定义项目需要依赖的包(可能有多个),而依赖的包可能又依赖其他的包(这就是组件">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.450Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP神器之Composer">
+<meta name="twitter:description" content="Composer是一个非常流行的PHP包依赖管理工具,已经取代PEAR包管理器,对于PHP开发者来说掌握Composer是必须的.
+对于使用者来说Composer非常的简单,通过简单的一条命令将需要的代码包下载到vendor目录下,然后开发者就可以引入包并使用了.
+其中的关键在于你项目定义的composer.json,可以定义项目需要依赖的包(可能有多个),而依赖的包可能又依赖其他的包(这就是组件">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2016/12/27/php神器之composer/"/>
+
+
+
+
+
+  <title> PHP神器之Composer | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2016/12/27/php神器之composer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP神器之Composer
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-27T22:33:30+08:00">
+                2016-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/27/php神器之composer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/27/php神器之composer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Composer是一个非常流行的PHP包依赖管理工具,已经取代PEAR包管理器,对于PHP开发者来说掌握Composer是必须的.</p>
+<p>对于使用者来说Composer非常的简单,通过简单的一条命令将需要的代码包下载到vendor目录下,然后开发者就可以引入包并使用了.</p>
+<p>其中的关键在于你项目定义的composer.json,可以定义项目需要依赖的包(可能有多个),而依赖的包可能又依赖其他的包(这就是组件的好处),这些都不用你烦心,Composer会自动下载你需要的一切,一切在于composer.json的定义.</p>
+<p>Composer对于使用者来说是很透明,但是其背后的理念还是需要了解一下的,其的诞生也不是偶然的,得益于Github的快速发展,PHP语言也越来越现代化,显得更高大上了.</p>
+<p>为了理解Composer,先大概了解下其结构:</p>
+<p><strong>Composer的结构</strong></p>
+<ul>
+<li>Composer命令行工具:这个理解就比较简单了,通过使用者定义的Composer.json去下载你需要的代码,假如只是简单的使用Composer,那么掌握一些具体命令就完全可以了</li>
+<li>Autoloading代码加载器:通过Composer,开发者可以通过多种方式去使用,而其中的关键在于PHP的命名空间概念,以及PSR-4标准的发展,Composer只是根据这二者开发了一个代码自动加载器</li>
+<li>Github:有了Github,PHP开发人员可以将开源的代码托管在这上面,而Composer的发展源于Github,Composer本质上就是将Github上的代码下载到本地.</li>
+<li>Packagist:对于使用者来说使用的是Composer的命令行工具,那么命令行工具怎么知道有多少包可以被用户使用呢,这主要就是依赖于Packagist,Packagist是Composer主要的一个包信息存储库,包开发者将具体代码托管到Github上,将包信息提交到Packagist上,这样使用者就可以通过Composer去使用.</li>
+<li>Composer根据本地定义的composer.json信息去查询Packagist,Packagist根据Composer.json/Package.json信息解析,最终对应到github仓库,Composer最终下载代码的时候还要依赖于Github仓库上的Composer.json,这里涉及到三种类型的composer.json,含义是不一样的.</li>
+<li>Composer.json:这是Composer的核心,是Composer的规则,上面也提到了三种类型的Composer.json,在使用的时候一定要注意区分,我初学的时候就总是搞乱.<br><strong>Composer命令行工具</strong></li>
+</ul>
+<p><strong>composer init</strong></p>
+<p>使用者可以在自己的项目下创建composer.json以便定义你项目的依赖包,也可以通过composer init交互式的创建composer.json.</p>
+<p><strong>composer install</strong></p>
+<p>应该是最常用的命令,composer会根据本地的composer.json安装包,将下载的包放入项目下的vendor目录下,同时将安装时候的包版本信息放入到composer.lock,以便锁定版本.</p>
+<p>其实在install的时候,假如发现composer.lock版本和目前vendor目录下的代码版本是一致的,则Composer会什么也不做,composer.lock的目的就是让你安心在目前这个版本下工作,而不获取最新版本的包.</p>
+<p><strong>composer update</strong></p>
+<p>那么如何更新composer.lock以便获取到最新版本的包呢?通过这个命令即可更新最新版本的包</p>
+<p><strong>composer config</strong></p>
+<p>这个命令还是建议了解下,全局的配置保存在COMPOSER_HOME/config.json,非全局的配置信息则存储在本项目目录下.</p>
+<blockquote>
+<p><span class="">composer </span><span class="">config</span><span class=""> –</span><span class="">list</span><span class=""> -</span><span class="">g</span></p>
+<p><span class="">composer </span><span class="">config</span><span class=""> -</span><span class="">g</span> <span class="">notify</span><span class="">-</span><span class="">on</span><span class="">-</span><span class="">install </span><span class="">false</span></p>
+<p><span class="">composer </span><span class="">global</span> <span class="">config </span><span class="">bin</span><span class="">-</span><span class="">dir</span><span class=""> –</span><span class="">absolute</span><br><strong>composer create-project
+</strong></p>
+</blockquote>
+<p>这个命令不常用,但是个人觉得还是很重要的,使用普通的install命令是将项目所有的依赖包下载到本项目vendor目录下.而通过这个命令则是将所有的代码及其依赖的包放到一个目录下,相当于执行了一个git clone命令,一般是包的开发者可能为了修复bug会使用该命令.</p>
+<p><strong>composer global</strong></p>
+<p>这是一个全局的安装命令,它允许你在COMPOSER_HOME目录下执行Composer的命令,比如install,update.当然你的COMPOSER_HOME要在$PATH环境下.</p>
+<p>比如执行composer global require fabpot/php-cs-fixer,现在php-cs-fixer命令行可以全局运行了,如果稍后想更新它,只需要运行composer global update</p>
+<p><strong>composer dump-autoload</strong></p>
+<p>当你修改项目下的composer.json的文件,并不一定要运行composer update命令进行更新,有的时候可以使用该命令来更新加载器,比如你要引用本地自定义的包(不是来自于packagist),后面会通过实践来说明该命令.</p>
+<p><strong>composer require</strong></p>
+<p>假如手动或者交互式创建composer.json文件,可以直接使用该命令来安装包</p>
+<blockquote>
+<p><span class="">composer require  </span><span class="">cerdic</span><span class="">/</span><span class="">css</span><span class="">-</span><span class="">tidy</span><span class="">:</span><span class="">1.5.2</span></p>
+<p><span class="">composer </span><span class="">require</span> <span class="">“ywdblog/phpcomposer:dev-master”</span><br><strong>–prefer-source和–prefer-dist参数</strong></p>
+</blockquote>
+<p>–prefer-dist:对于稳定的包来说,一般Composer安装默认使用该参数,这也能加快安装,比如有可能直接从packagist安装了相应的包,而不用实际去Github上下载包.</p>
+<p>–prefer-source:假如使用该参数,则会直接从Github上安装,安装包后vendor目录下还含有.git信息</p>
+<blockquote>
+<p><span class="">composer </span><span class="">require</span> <span class="">“ywdblog/phpcomposer:dev-master”</span><span class=""> –</span><span class="">prefer</span><span class="">-</span><span class="">source</span></p>
+<p>#在vendor/ywdblog/phpcomposer目录下含有.git信息<br><strong>如何给Composer添加代理</strong></p>
+</blockquote>
+<p>在国内使用Composer下载特别慢,可以通过二个方法进行加速</p>
+<ul>
+<li>composer config repo.packagist composer “<a href="https://packagist.phpcomposer.com“" target="_blank" rel="external">https://packagist.phpcomposer.com“</a></li>
+<li>编辑composer.json<blockquote>
+<p><span class="">“repositories”</span><span class="">: </span><span class="">{</span></p>
+<p><span class="">  </span><span class="">“packagist”</span><span class="">: </span><span class="">{</span></p>
+<p><span class="">      </span><span class="">“type”</span><span class="">: </span><span class="">“composer”</span><span class="">,</span></p>
+<p><span class="">      </span><span class="">“url”</span><span class="">: </span><span class="">“<a href="https://packagist.phpcomposer.com" target="_blank" rel="external">https://packagist.phpcomposer.com</a>“</span></p>
+<p><span class="">  </span><span class="">}</span></p>
+<p>}<br><strong>Autoloading代码加载器</strong></p>
+</blockquote>
+</li>
+</ul>
+<p>composer本身集成一个autoloader,支持PSR-4,PSR-0,classmap,files autoloading.</p>
+<p>这里通过一个例子来说明通过Composer如何引用classmap,files,本地符合PSR-4标准的代码</p>
+<p>编辑composer.json</p>
+<blockquote>
+<p><span class="">“autoload”</span><span class="">: </span><span class="">{</span></p>
+<p><span class="">  </span><span class="">“classmap”</span><span class="">: </span><span class="">[</span><span class="">“othsrc/“</span><span class="">,</span><span class="">“classsrc.php”</span><span class="">],</span></p>
+<p><span class="">  </span><span class="">“files”</span><span class="">: </span><span class="">[</span><span class="">“othsrc/filesrc.php”</span><span class="">],</span></p>
+<p><span class="">  </span><span class="">“psr-4”</span><span class="">: </span><span class="">{</span><span class="">“Foo\Bar\”: “</span><span class="">src</span>“<span class="">}</span></p>
+<p>}<br>composer dump-autoload</p>
+</blockquote>
+<p>通过上述的操作,对于PSR-4来说等同注册了一个PSR-4 autoloader(从FooBar命名空间)</p>
+<p>假如不想使用Composer的autoloader,可以直接包含vendor/composer/autoload_*.php 文件,配置自己的加载器.</p>
+<p>具体的例子托管在github上,可参考.</p>
+<p><strong>Repositories</strong></p>
+<p>关于Repositories,了解其不是必须的,但是假如掌握则更能理解Composer,对于Repositories,其中文文档和英文文档解释的很好,这里也进行了一些摘抄.</p>
+<p><strong>基本概念</strong></p>
+<p>包:</p>
+<p>Composer是一个依赖管理工具,它在本地安装一些资源包和包的描述(比如包名称和对应的版本),比较重要的元数据描述是dist和source,dist指向一个存档,该存档是对一个资源包的某个版本的数据进行的打包.source指向一个开发中的源,这通常是一个源代码仓库(比如git)</p>
+<p>资源库:</p>
+<p>一个资源库是一个包的来源.它是一个packages/versions的列表.</p>
+<p>Composer将查看所有你定义的repositories以找到项目需要的资源包(这句话很重要).</p>
+<p>默认情况下已经将Packagist.org注册到Composer(或者理解为Packagist.org是Composer资源库默认的仓库类型)</p>
+<p><strong>Composer资源库类型</strong></p>
+<p>Composer资源库包括四种类型,默认的是composer类型,也就是packagist.org所使用的资源类型.</p>
+<p>它使用一个单一的packages.json文件,包含了所有的资源包元数据.当你将包发布到pckagist.org上,则默认系统会创建一个packages.json,不过我没有找到我的包对应的文件.</p>
+<p><strong>VCS资源库类型</strong></p>
+<p>假如你想构建一个私有的Composer私有资源库类型,可以使用该类型,这里举一个例子,比如你在自己项目的composer.json定义如下,则就可以使用对应的Github上的代码了.</p>
+<blockquote>
+<p>{</p>
+<p><span class="">    </span><span class="">“repositories”</span><span class="">: </span><span class="">[</span></p>
+<p><span class="">    </span><span class="">{</span></p>
+<p><span class="">        </span><span class="">“type”</span><span class="">: </span><span class="">“vcs”</span><span class="">,</span></p>
+<p><span class="">        </span><span class="">“url”</span><span class="">: </span><span class="">“<a href="https://github.com/ywdblog/phpcomposer" target="_blank" rel="external">https://github.com/ywdblog/phpcomposer</a>“</span></p>
+<p><span class="">    </span><span class="">}</span></p>
+<p><span class="">    </span><span class="">],</span></p>
+<p><span class="">    </span><span class="">“require”</span><span class="">: </span><span class="">{</span></p>
+<p><span class="">        </span><span class="">“ywdblog/phpcomposer”</span><span class="">: </span><span class="">“dev-master”</span></p>
+<p><span class="">    </span><span class="">}</span></p>
+<p>}<br>当运行composer update的时候,Comoser实际上是从Github上下载包而不是从pckagist.org上下载.</p>
+</blockquote>
+<p>另外假如需要使用Package资源库类型或者PEAR资源库类型,参考官方文档即可,一般在composer.json中定义name、version属性即可.</p>
+<p><strong>Composer.json</strong></p>
+<p>在本文上面也多次提到了composer.json,比如你希望使用第三方包则需要在本地定义composer.json,Composer安装第三方包后,也会在第三方包目录下发现composer.json,那么这二者都叫composer.json,有什么区别呢?理解这非常的重要.</p>
+<p>假如你在自己的项目下面定义一个composer.json,则这个包称之为ROOT包,这个composer.json定义你项目需要的条件(比如你的项目可能依赖一个第三方包).</p>
+<p>composer.json中有些属性只能被ROOT包使用,比如config属性只在ROOT包中生效.</p>
+<p>一个资源包是不是ROOT包,取决于它的上下文,比如你git clone ywdblog/phpcomposer,则这时候本地phpcomposer目录就是ROOT包,假如你在本地phpcomposer目录下composer require ywdblog/phpcomposer,则这时候你的项目phpcomposer就是ROOT包.</p>
+<p>了解composer-schema.json可参考该网址,Laravel作为一个成熟的框架,其定义的composer.json非常经典</p>
+<p><strong>关于包的版本</strong></p>
+<p>当使用者在本地配置composer.json的时候,可以指定需要包的特定版本,Composer支持从Github仓库中下载Tag或者分支下的包.</p>
+<p>对于Github上的Tag来说,Packagist会创建对应包的版本,它符合X.Y.Z,vX.Y.Z,X.Y.Z-包类型,就是说Github上虽然只有一个特定版本的包,但Composer支持多种形式的引用方式,比如:</p>
+<blockquote>
+<p><span class="">composer require </span><span class="">monolog</span><span class="">/</span><span class="">monolog</span><span class="">  </span><span class="">1.0.0</span><span class="">-</span><span class="">RC1</span></p>
+<p><span class="">composer require </span><span class="">monolog</span><span class="">/</span><span class="">monolog  </span><span class="">v1</span><span class="">.</span><span class="">0.0</span><span class="">-</span><span class="">RC1</span></p>
+<p><span class="">composer require </span><span class="">monolog</span><span class="">/</span><span class="">monolog</span><span class="">  </span><span class="">1.0.</span><span class="">*</span></p>
+<p><span class="">composer require </span><span class="">monolog</span><span class="">/</span><span class="">monolog</span><span class="">  ~</span><span class="">1.10</span><br>对于Github上的分支来说,Packagist会创建对应包的版本,假如分支名看起来像一个版本,将创建{分支名}-dev的包版本号,如果分支名看起来不像一个版本号,它将会创建dev-{分支名}形式的版本号<br><span class="">composer require </span><span class="">monolog</span><span class="">/</span><span class="">monolog  </span><span class="">master</span><span class="">-</span><span class="">dev</span></p>
+<p><span class="">composer require </span><span class="">monolog</span><span class="">/</span><span class="">monolog  </span><span class="">master</span><span class="">.</span><span class="">x</span><span class="">-</span><span class="">dev</span><br><strong>总结:</strong></p>
+</blockquote>
+<p>理解Composer,最重要的是实践,最后也能明白PSR-4和命名空间,也可以尝试将你的项目发布到pckagist.org上.</p>
+<p>&nbsp;</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/composer/" rel="tag"># composer</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/27/php-命令行下的世界/" rel="next" title="PHP 命令行下的世界">
+                <i class="fa fa-chevron-left"></i> PHP 命令行下的世界
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/21/循序渐进完善网站服务器架构/" rel="prev" title="循序渐进完善网站服务器架构">
+                循序渐进完善网站服务器架构 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/27/php神器之composer/"
+     data-title="PHP神器之Composer"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2016/12/27/php神器之composer/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/27/php神器之composer/"
+           data-title="PHP神器之Composer" data-url="http://merlinfeng.github.io/2016/12/27/php神器之composer/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

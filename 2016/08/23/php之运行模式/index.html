@@ -1,0 +1,898 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP,运行模式," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近接触的服务器都是nginx，不是原来的apache，所以对于PHP的执行开始纠结起来，因为调用扩展的方式不一样，
+故此引出PHP的运行模式这一话题。
+首先概括下
+PHP运行模式有4钟：
+1）cgi 通用网关接口（Common Gateway Interface)2） fast-cgi 常驻 (long-live) 型的 CGI3） cli  命令行运行   （Command Line Inte">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP之运行模式">
+<meta property="og:url" content="http://merlinfeng.github.io/2016/08/23/php之运行模式/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="最近接触的服务器都是nginx，不是原来的apache，所以对于PHP的执行开始纠结起来，因为调用扩展的方式不一样，
+故此引出PHP的运行模式这一话题。
+首先概括下
+PHP运行模式有4钟：
+1）cgi 通用网关接口（Common Gateway Interface)2） fast-cgi 常驻 (long-live) 型的 CGI3） cli  命令行运行   （Command Line Inte">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.450Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP之运行模式">
+<meta name="twitter:description" content="最近接触的服务器都是nginx，不是原来的apache，所以对于PHP的执行开始纠结起来，因为调用扩展的方式不一样，
+故此引出PHP的运行模式这一话题。
+首先概括下
+PHP运行模式有4钟：
+1）cgi 通用网关接口（Common Gateway Interface)2） fast-cgi 常驻 (long-live) 型的 CGI3） cli  命令行运行   （Command Line Inte">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2016/08/23/php之运行模式/"/>
+
+
+
+
+
+  <title> PHP之运行模式 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2016/08/23/php之运行模式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP之运行模式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-23T16:54:45+08:00">
+                2016-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/WEB技术/" itemprop="url" rel="index">
+                    <span itemprop="name">WEB技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/WEB技术/综合/" itemprop="url" rel="index">
+                    <span itemprop="name">综合</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/WEB技术/综合/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/08/23/php之运行模式/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/23/php之运行模式/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近接触的服务器都是nginx，不是原来的apache，所以对于PHP的执行开始纠结起来，因为调用扩展的方式不一样，</p>
+<p>故此引出PHP的运行模式这一话题。</p>
+<p>首先概括下</p>
+<p><strong>PHP运行模式有4钟：
+</strong>1）cgi 通用网关接口（Common Gateway Interface)<br>2） fast-cgi 常驻 (long-live) 型的 CGI<br>3） cli  命令行运行   （Command Line Interface）<br>4）web模块模式 （apache等web服务器运行的模块模式）</p>
+<p><strong>
+</strong>目前在HTTPServer这块基本可以看到有三种stack比较流行：<br>（1）Apache+mod_php5<br>（2）lighttp+spawn-fcgi<br>（3）nginx+PHP-FPM<br>三者后两者性能可能稍优，但是Apache由于有丰富的模块和功能，目前来说仍旧是老大。有人测试nginx+PHP-FPM在高并发情况下可能会达到Apache+mod_php5的5~10倍，现在nginx+PHP-FPM使用的人越来越多。</p>
+<p>然后我们来一次介绍巴拉巴拉。。</p>
+<p>&nbsp;</p>
+<p><strong>1.CGI（Common Gateway Interface）</strong></p>
+<p><div><strong>
+</strong>CGI即通用网关接口(Common Gateway Interface)，它是一段程序, 通俗的讲CGI就象是一座桥，把网页和WEB服务器中的执行程序连接起来，它把HTML接收的指令传递给服务器的执行程序，再把服务器执行程序的结果返还给HTML页。CGI 的跨平台性能极佳，几乎可以在任何操作系统上实现。 CGI已经是比较老的模式了，这几年都很少用了。每有一个用户请求，都会先要创建cgi的子进程，然后处理请求，处理完后结束这个子进程，这就是fork-and-execute模式。 当用户请求数量非常多时，会大量挤占系统的资源如内存，CPU时间等，造成效能低下。所以用cgi方式的服务器有多少连接请求就会有多少cgi子进程，子进程反复加载是cgi性能低下的主要原因。</div></p>
+<p><div>如果不想把 PHP 嵌入到服务器端软件（如 Apache）作为一个模块安装的话，可以选择以 CGI 的模式安装。或者把 PHP 用于不同的 CGI 封装以便为代码创建安全的 chroot 和 setuid 环境。这样每个客户机请求一个php文件，Web服务器就调用php.exe（win下是php.exe,linux是php）去解释这个文件，然后再把解释的结果以网页的形式返回给客户机。 这种安装方式通常会把 PHP 的可执行文件安装到 web 服务器的 cgi-bin 目录。CERT 建议书 CA-96.11 建议不要把任何的解释器放到 cgi-bin 目录。这种方式的好处是把web server和具体的程序处理独立开来，结构清晰，可控性强，同时缺点就是如果在高访问需求的情况下，cgi的进程fork就会成为很大的服务器负担，想 象一下数百个并发请求导致服务器fork出数百个进程就明白了。这也是为什么cgi一直背负性能低下，高资源消耗的恶名的原因。</div><br>&nbsp;</p>
+<p><strong>CGI模式安装：</strong></p>
+<p><strong>
+</strong>CGI已经是比较老的模式了，这几年都很少用了,所以我们只是为了测试。<br>安装CGI模式需要注释掉<br>LoadModule php5_module modules/libphp5.so 这行。如果不注释这行会一直走到handler模式。也就是模块模式。<br>然后在httpd.conf增加action：<br>Action application/x-httpd-php /cgi-bin/<br>如果在/cgi-bin/目录找不到php-cgi.可自行从php的bin里面cp一个。<br>然后重启apache,再打开测试页面发现Server API变成：CGI/FastCGI。说明成功切换为cgi模式。<br><strong>问题：</strong></p>
+<p><strong>
+</strong>1)  如果cgi程序放在/usr/local/httpd/cgi-bin/里无法执行，遇到403或500错误的话<br>打开apache错误日志 有如下提示： Permission denied: exec of<br>可以检查cgi程序的属性，按Linux contexts文件 里定义的，/usr/local/httpd/cgi-bin/里必须是httpd_sys_script_exec_t 属性。  通过ls -Z查看，如果不是则通过如下命令更改： chcon -t httpd_sys_script_exec_t /var/www/cgi-bin/*.cgi 如果是虚拟主机里的cgi，则参考问题2使之能正常使用普通的功能后，再通过chcon设置cgi文件的context为<br>httpd_sys_script_exec_t即可。chcon -R -t httpd_sys_script_exec_t cgi-bin/<br>2) apache错误提示：…. malformed header from script. Bad header=<br>根据提示说明有header有问题，查看文件输出的第一句话是什么，应该类似于如下<br>Content-type: text/plain; charset=iso-8859-1\n\n<br>或者Content-type:text/html\n\n<br>注意：声明好Content-type后要输出两个空行。<br>3）apache错误提示： Exec format error<br>脚本解释器设置错误。脚本第一行应该以’#!解释器路径’的形式, 填写脚本解释器的路径，如果是PERL程序，常见的路径为: #!/usr/bin/perl 或 #!/usr/local/bin/perl   如果是PHP程序，不需要填写解释器路径，系统会自动找到PHP。</p>
+<a id="more"></a>
+<p><strong>2. Fastcgi模式</strong></p>
+<p><strong>
+</strong>fast-cgi 是cgi的升级版本，FastCGI 像是一个常驻 (long-live) 型的 CGI，它可以一直执行着，只要激活后，不会每次都要花费时间去 fork 一次 (这是 CGI 最为人诟病的 fork-and-execute 模式)。<br>FastCGI的工作原理是：<br>(1)、Web Server启动时载入FastCGI进程管理器【PHP的FastCGI进程管理器是PHP-FPM(php-FastCGI Process Manager)】（IIS ISAPI或Apache Module);<br>(2)、FastCGI进程管理器自身初始化，启动多个CGI解释器进程 (在任务管理器中可见多个php-cgi.exe)并等待来自Web Server的连接。<br>(3)、当客户端请求到达Web Server时，FastCGI进程管理器选择并连接到一个CGI解释器。Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。<br>(4)、FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器（运行在 WebServer中）的下一个连接。在正常的CGI模式中，php-cgi.exe在此便退出了。<br>在CGI模式中，你可以想象 CGI通常有多慢。每一个Web请求PHP都必须重新解析php.ini、重新载入全部dll扩展并重初始化全部数据结构。使用FastCGI，所有这些都只在进程启动时发生一次。一个额外的好处是，持续数据库连接(Persistent database connection)可以工作。<br><strong>Fastcgi的优点：
+</strong>1）从稳定性上看, fastcgi是以独立的进程池运行来cgi,单独一个进程死掉,系统可以很轻易的丢弃,然后重新分 配新的进程来运行逻辑.<br>2）从安全性上看,Fastcgi支持分布式运算. fastcgi和宿主的server完全独立, fastcgi怎么down也不会把server搞垮.<br>3）从性能上看, fastcgi把动态逻辑的处理从server中分离出来, 大负荷的IO处理还是留给宿主server, 这样宿主server可以一心一意作IO,对于一个普通的动态网页来说, 逻辑处理可能只有一小部分, 大量的图片等静态<br>FastCGI缺点：说完了好处，也来说说缺点。从我的实际使用来看，用FastCGI模式更适合生产环境的服务器。但对于开发用机器来说就不太合适。因为当使用 Zend Studio调试程序时，由于 FastCGI会认为 PHP进程超时，从而在页面返回 500错误。这一点让人非常恼火，所以我在开发机器上还是换回了 ISAPI模式。<br><strong>安装fastcgi模式：
+</strong>安装apache路径是/usr/local/httpd/<br>安装php路径是/usr/local/php/</p>
+<p><strong>1）安装mod_fastcgi</strong></p>
+<blockquote>
+<p>**</p>
+<p>**wget <a href="http://www.fastcgi.com/dist/mod_fastcgi-2.4.6.tar.gz" target="_blank" rel="external">http://www.fastcgi.com/dist/mod_fastcgi-2.4.6.tar.gz</a></p>
+<p>tar zxvf mod_fastcgi-2.4.6.tar.gz</p>
+<p>cd mod_fastcgi-2.4.6</p>
+<p>cp Makefile.AP2 Makefile</p>
+<p>vi Makefile， top_dir = /usr/local/httpd</p>
+<p>make</p>
+<p>make install</p>
+<p>安装完后，</p>
+<p>/usr/local/httpd/modules/多出一个文件：mod_fcgid.so<br><strong>2）重新编译php</strong><br>**</p>
+<p>**./configure –prefix=/usr/local/php –enable-fastcgi –enable-force-cgi-redirect –disable-cli</p>
+<p>make</p>
+<p>make install<br>这样编译后，在PHP的bin目录下的php-cgi就是fastcgi模式的php解释器了<br>安装成功后,执行<br><code>php -v</code><br><code>PHP 5.3.2 (cgi-fcgi).</code><br>这里输出带了cgi-fcgi<br><strong>注意：
+</strong>1.编译参数不能加 –with-apxs=/usr/local/httpd/bin/apxs 否则安装出来的php执行文件是cli模式的<br>2 如果编译时不加–disable-cli则输出 PHP 5.3.2(cli)</p>
+</blockquote>
+<p>3)配置apache<br>需要配置apache来以fastcgi模式运行php程序<br>vi httpd.conf<br>我们使用虚拟机的方式实现：</p>
+<p><div class="codetitle"><a id="copybut26600" class="copybut"></a>复制代码代码如下:</div></p>
+<p><div id="code26600" class="codebody"><strong>#加载fastcgi模块
+</strong>LoadModule fastcgi_module modules/mod_fastcgi.so</div></p>
+<p>#//以静态方式执行fastcgi 启动了10进程<br>FastCgiServer /usr/local/php/bin/php-cgi  -processes 10 -idle-timeout 150 -pass-header HTTP_AUTHORIZATION</p>
+<p><div class="codebody"><code>&lt;VirtualHost *:80&gt;</code><br><code>#</code><br><code>DocumentRoot   /usr/local/httpd/fcgi-bin</code><br><code>ServerName www.fastcgitest.com`` ScriptAlias /fcgi-bin/   /usr/local/php/bin/   #定义目录映射 /fcgi-bin/ 代替 /usr/local/php/bin/</code><br><code>Options +ExecCGI</code><br><code>AddHandler fastcgi-script .php .fcgi #.php结尾的请求都要用php-fastcgi来处理</code><br><code>AddType application/x-httpd-php .php #增加MIME类型</code><br><code>Action application/x-httpd-php /fcgi-bin/php-cgi  #设置php-fastcgi的处理器： /usr/local/php/bin/php-cgi</code><br><code>&lt;Directory /usr/local/httpd/fcgi-bin/&gt;</code><br><code>Options Indexes ExecCGI</code><br><code>Order allow,deny</code><br><code>allow from all</code><br><code>&lt;/Directory&gt;</code><br><code>&lt;/VirtualHost&gt;</code></div><br>&nbsp;</p>
+<p>4）.restart 下apache,查看phpinfo，如果服务器信息是：<br>Apache/2.2.11 (Unix) mod_fastcgi/2.4.6之类的就说明安装成功了。<br>如果出现403的错误，查看下/usr/local/httpd/fcgi-bin/是否有足够的权限。<br>或者</p>
+<p><div class="codetitle"><a id="copybut96288" class="copybut"></a>复制代码代码如下:</div></p>
+<p><div id="code96288" class="codebody"><code>&lt;Directory /&gt;</code><br><code>Options FollowSymLinks</code><br><code>AllowOverride None</code><br><code>Order deny,allow</code><br><code>Deny from all</code><br><code>&lt;/Directory&gt;</code></div><br>改为：</p>
+<p><div class="codetitle"><a id="copybut35808" class="copybut"></a>复制代码代码如下:</div></p>
+<p><div id="code35808" class="codebody"><code>&lt;Directory /&gt;</code><br><code>Options FollowSymLinks</code><br><code>AllowOverride None</code><br><code>Order allow,deny</code><br><code>Allow from all</code><br><code>&lt;/Directory&gt;</code></div><br>就可以了。<br>ps -ef|grep  php-cgi可以看见10个fastcgi进程在跑。</p>
+<!--more-->
+<p><strong>3. CLI模式</strong></p>
+<p><strong>
+</strong>CLI是php的命令行运行模式，大家经常会使用它，但是可能并没有注意到（例如：我们在linux下经常使用 “php -m”查找PHP安装了那些扩展就是PHP命令行运行模式；有兴趣的同学可以输入php -h去深入研究该运行模式）<br>1.让 PHP 运行指定文件。<br>php script.php<br>php -f script.php<br>以上两种方法（使用或不使用 -f 参数）都能够运行脚本的script.php。您可以选择任何文件来运行，您指定的 PHP 脚本并非必须要以 .php 为扩展名，它们可以有任意的文件名和扩展名。<br>2.在命令行直接运行 PHP 代码。<br>php -r “print_r(get_defined_constants());”<br>在使用这种方法时，请您注意外壳变量的替代及引号的使用。<br>注: 请仔细阅读以上范例，在运行代码时没有开始和结束的标记符！加上 -r 参数后，这些标记符是不需要的，加上它们会导致语法错误。<br>3.通过标准输入（stdin）提供需要运行的 PHP 代码。<br>以上用法给我们提供了非常强大的功能，使得我们可以如下范例所示，动态地生成 PHP 代码并通过命令行运行这些代码：<br>$ some_application | some_filter | php | sort -u &gt;final_output.txt</p>
+<!--more-->
+<p><strong>4. 模块模式</strong></p>
+<p><strong>
+</strong>模块模式是以mod_php5模块的形式集成，此时mod_php5模块的作用是接收Apache传递过来的PHP文件请求，并处理这些请求，然后将处理后的结果返回给Apache。如果我们在Apache启动前在其配置文件中配置好了PHP模块（mod_php5）， PHP模块通过注册apache2的ap_hook_post_config挂钩，在Apache启动的时候启动此模块以接受PHP文件的请求。</p>
+<p>除了这种启动时的加载方式，Apache的模块可以在运行的时候动态装载，这意味着对服务器可以进行功能扩展而不需要重新对源代码进行编译，甚至根本不需要停止服务器。我们所需要做的仅仅是给服务器发送信号HUP或者AP_SIG_GRACEFUL通知服务器重新载入模块。但是在动态加载之前，我们需要将模块编译成为动态链接库。此时的动态加载就是加载动态链接库。 Apache中对动态链接库的处理是通过模块mod_so来完成的，因此mod_so模块不能被动态加载，它只能被静态编译进Apache的核心。这意味着它是随着Apache一起启动的。<br>Apache是如何加载模块的呢？我们以前面提到的mod_php5模块为例。首先我们需要在Apache的配置文件httpd.conf中添加一行：<br>该运行模式是我们以前在windows环境下使用apache服务器经常使用的，而在模块化(DLL)中，PHP是与Web服务器一起启动并运行的。（是apache在CGI的基础上进行的一种扩展，加快PHP的运行效率）</p>
+<p><div class="codetitle">代码如下:</div></p>
+<p><div id="code17246" class="codebody"><code>LoadModule php5_module modules/mod_php5.so</code></div><br>这里我们使用了LoadModule命令，该命令的第一个参数是模块的名称，名称可以在模块实现的源码中找到。第二个选项是该模块所处的路径。如果需要在服务器运行时加载模块，可以通过发送信号HUP或者AP_SIG_GRACEFUL给服务器，一旦接受到该信号，Apache将重新装载模块，而不需要重新启动服务器。<br><!--more--><br><strong>5.php在Nginx中运行模式（Nginx+ PHP-FPM）</strong></p>
+<p><strong>
+</strong>使用FastCGI方式现在常见的有两种stack：ligthttpd+spawn-fcgi;另外一种是nginx+PHP-FPM(也可以用spawn-fcgi)。<br>A、如上面所说该两种结构都采用FastCGI对PHP支持，因此HTTPServer完全解放出来，可以更好地进行响应和并发处理。因此lighttpd和nginx都有small, but powerful和efficient的美誉。<br>B、该两者还可以分出一个好坏来，spawn-fcgi由于是lighttpd的一部分，因此安装了lighttpd一般就会使用spawn-fcgi对php支持，但是目前有用户说ligttpd的spwan-fcgi在高并发访问的时候，会出现上面说的内存泄漏甚至自动重启fastcgi。即：PHP脚本处理器当机，这个时候如果用户访问的话，可能就会出现白页(即PHP不能被解析或者出错)。</p>
+<p>另一个：首先nginx不像lighttpd本身含带了fastcgi(spawn-fcgi)，因此它完全是轻量级的，必须借助第三方的FastCGI处理器才可以对PHP进行解析，因此其实这样看来nginx是非常灵活的，它可以和任何第三方提供解析的处理器实现连接从而实现对PHP的解析(在nginx.conf中很容易设置)。nginx可以使用spwan-fcgi(需要一同安装lighttpd，但是需要为nginx避开端口，一些较早的blog有这方面安装的教程)，但是由于spawn-fcgi具有上面所述的用户逐渐发现的缺陷，现在慢慢减少使用nginx+spawn-fcgi组合了。</p>
+<p>C、由于spawn-fcgi的缺陷，现在出现了新的第三方(目前还是，听说正在努力不久将来加入到PHP core中)的PHP的FastCGI处理器，叫做PHP-FPM(具体可以google)。它和spawn-fcgi比较起来有如下优点：<br>由于它是作为PHP的patch补丁来开发的，安装的时候需要和php源码一起编译，也就是说编译到php core中了，因此在性能方面要优秀一些；<br>同时它在处理高并发方面也优于spawn-fcgi，至少不会自动重启fastcgi处理器。具体采用的算法和设计可以google了解。</p>
+<p>因此，如上所说由于nginx的轻量和灵活性，因此目前性能优越，越来越多人逐渐使用这个组合：nginx+PHP/PHP-FPM</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/运行模式/" rel="tag"># 运行模式</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/15/web攻防之xsscsrfsql注入/" rel="next" title="Web攻防之XSS,CSRF,SQL注入">
+                <i class="fa fa-chevron-left"></i> Web攻防之XSS,CSRF,SQL注入
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/16/linux释放内存/" rel="prev" title="linux释放内存">
+                linux释放内存 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/08/23/php之运行模式/"
+     data-title="PHP之运行模式"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2016/08/23/php之运行模式/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/23/php之运行模式/"
+           data-title="PHP之运行模式" data-url="http://merlinfeng.github.io/2016/08/23/php之运行模式/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,862 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="内存溢出," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一．内存溢出解决方案
+在做数据统计分析时，经常会遇到大数组，可能会发生内存溢出，这里分享一下我的解决方案。还是用例子来说明这个问题，如下：
+假定日志中存放的记录数为500000条，那么解决方案如下：
+&amp;lt;?php
+ini_set(‘memory_limit’,’64M’);　//重置php可以使用的内存大小为64M，一般在远程主机上是不能修改php.ini文件的，只能通过程序设置。注：在saf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP内存溢出解决方案">
+<meta property="og:url" content="http://merlinfeng.github.io/2017/02/08/php内存溢出解决方案/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="一．内存溢出解决方案
+在做数据统计分析时，经常会遇到大数组，可能会发生内存溢出，这里分享一下我的解决方案。还是用例子来说明这个问题，如下：
+假定日志中存放的记录数为500000条，那么解决方案如下：
+&amp;lt;?php
+ini_set(‘memory_limit’,’64M’);　//重置php可以使用的内存大小为64M，一般在远程主机上是不能修改php.ini文件的，只能通过程序设置。注：在saf">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.452Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP内存溢出解决方案">
+<meta name="twitter:description" content="一．内存溢出解决方案
+在做数据统计分析时，经常会遇到大数组，可能会发生内存溢出，这里分享一下我的解决方案。还是用例子来说明这个问题，如下：
+假定日志中存放的记录数为500000条，那么解决方案如下：
+&amp;lt;?php
+ini_set(‘memory_limit’,’64M’);　//重置php可以使用的内存大小为64M，一般在远程主机上是不能修改php.ini文件的，只能通过程序设置。注：在saf">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2017/02/08/php内存溢出解决方案/"/>
+
+
+
+
+
+  <title> PHP内存溢出解决方案 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2017/02/08/php内存溢出解决方案/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP内存溢出解决方案
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-08T12:16:22+08:00">
+                2017-02-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/08/php内存溢出解决方案/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/08/php内存溢出解决方案/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一．内存溢出解决方案</p>
+<p>在做数据统计分析时，经常会遇到大数组，可能会发生内存溢出，这里分享一下我的解决方案。还是用例子来说明这个问题，如下：</p>
+<p>假定日志中存放的记录数为500000条，那么解决方案如下：</p>
+<p><pre class="lang:php decode:true">&lt;?php</pre></p>
+<p>ini_set(‘memory_limit’,’64M’);　//重置php可以使用的内存大小为64M，一般在远程主机上是不能修改php.ini文件的，只能通过程序设置。注：在safe_mode（安全模式）下，ini_set失效</p>
+<p>set_time_limit(600);//设置超时限制为６分钟</p>
+<p>$farr = $Uarr = $Marr = $IParr = $data = $_sub = array();</p>
+<p>$spt = ”$@#!$”;</p>
+<p>$root = ”/Data/webapps/VisitLog”;</p>
+<p>$path = $dpath = $fpath = NULL;</p>
+<p>$path = $root.”/”.date(“Y-m”,$timestamp);</p>
+<p>$dpath = $path.”/”.date(“m-d”,$timestamp);</p>
+<p>for($j=0;$j&lt;24;$j++){</p>
+<p>$v = ($j &lt; 10) ? ”0″.$j : $j;</p>
+<p>$gpath = $dpath.”/”.$v.”.php”;</p>
+<p>if(!file_exists($gpath)){</p>
+<p>continue;</p>
+<p>} else {</p>
+<p>$arr = file($gpath);////将文件读入数组中</p>
+<p>array_shift($arr);//移出第一个单元－》&lt;?php exit;?&gt;</p>
+<p>$farr = array_merge($farr,$arr);</p>
+<p>unset($arr);</p>
+<p>}</p>
+<p>}</p>
+<p>if(empty($this-&gt;farr)){</p>
+<p>echo ”</p>
+<p><center>没有相关记录！</center><br>”;</p>
+<p>exit;</p>
+<p>}</p>
+<p>while(!empty($farr)){</p>
+<p>$_sub = array_splice($farr, 0, 10000); //每次取出$farr中1000个</p>
+<p>for($i=0,$scount=count($_sub);$i&lt;$scount;$i++){</p>
+<p>$arr = explode($spt,$_sub[$i]);</p>
+<p>$Uarr[] = $arr[1]; //vurl</p>
+<p>$Marr[] = $arr[2]; //vmark</p>
+<p>$IParr[] = $arr[3].” |$nbsp;”.$arr[1]; //IP</p>
+<p>}</p>
+<p>unset($_sub);//用完及时销毁</p>
+<p>}</p>
+<p>unset($farr);</p>
+<p>?&gt;<br>&nbsp;</p>
+<p>这里，不难看出，一方面，我们要增加PHP可用内存大小，另一方面，只要我们想办法对数组进行分批处理，分而治之，将用过的变量及时销毁(unset)，一般是不会出现溢出问题的。</p>
+<p>另外，为了节省PHP程序内存损耗，我们应当尽可能减少静态变量的使用，在需要数据重用时，可以考虑使用引用(&amp;)。再一点就是：数据库操作完成后，要马上关闭连接；一个对象使用完，要及时调用析构函数（__destruct()）。</p>
+<p>二．unset销毁变量并释放内存问题</p>
+<p>PHP的unset()函数用来清除、销毁变量，不用的变量，我们可以用unset()将它销毁。但是某些时候，用unset()却无法达到销毁变 量占用的内存！我们先看一个例子：</p>
+<p>&nbsp;</p>
+<p>最后输出unset()之前占用内存减去unset()之后占用内存，如果是正数，那么说明unset(<span id="MathJax-Element-24-Frame" class="MathJax"><span id="MathJax-Span-208" class="math"><span id="MathJax-Span-209" class="mrow"><span id="MathJax-Span-210" class="mi">s</span><span id="MathJax-Span-211" class="mo">)</span><span id="MathJax-Span-212" class="texatom"><span id="MathJax-Span-213" class="mrow"><span id="MathJax-Span-214" class="mo">已</span></span></span><span id="MathJax-Span-215" class="texatom"><span id="MathJax-Span-216" class="mrow"><span id="MathJax-Span-217" class="mo">经</span></span></span><span id="MathJax-Span-218" class="texatom"><span id="MathJax-Span-219" class="mrow"><span id="MathJax-Span-220" class="mo">将</span></span></span></span></span></span>s从内存中销毁(或者说，unset()之后内存占用减少了)，可是我在PHP5和windows平台下，得到的结果是：0。这是否可以说明，unset(<span id="MathJax-Element-25-Frame" class="MathJax"><span id="MathJax-Span-221" class="math"><span id="MathJax-Span-222" class="mrow"><span id="MathJax-Span-223" class="mi">s</span><span id="MathJax-Span-224" class="mo">)</span><span id="MathJax-Span-225" class="texatom"><span id="MathJax-Span-226" class="mrow"><span id="MathJax-Span-227" class="mo">并</span></span></span><span id="MathJax-Span-228" class="texatom"><span id="MathJax-Span-229" class="mrow"><span id="MathJax-Span-230" class="mo">没</span></span></span><span id="MathJax-Span-231" class="texatom"><span id="MathJax-Span-232" class="mrow"><span id="MathJax-Span-233" class="mo">有</span></span></span><span id="MathJax-Span-234" class="texatom"><span id="MathJax-Span-235" class="mrow"><span id="MathJax-Span-236" class="mo">起</span></span></span><span id="MathJax-Span-237" class="texatom"><span id="MathJax-Span-238" class="mrow"><span id="MathJax-Span-239" class="mo">到</span></span></span><span id="MathJax-Span-240" class="texatom"><span id="MathJax-Span-241" class="mrow"><span id="MathJax-Span-242" class="mo">销</span></span></span><span id="MathJax-Span-243" class="texatom"><span id="MathJax-Span-244" class="mrow"><span id="MathJax-Span-245" class="mo">毁</span></span></span><span id="MathJax-Span-246" class="texatom"><span id="MathJax-Span-247" class="mrow"><span id="MathJax-Span-248" class="mo">变</span></span></span><span id="MathJax-Span-249" class="texatom"><span id="MathJax-Span-250" class="mrow"><span id="MathJax-Span-251" class="mo">量</span></span></span></span></span></span>s所占用内存的作用呢？我们再作下面的例子：</p>
+<p><pre class="lang:default decode:true">&lt;?php<br>$s=str_repeat(‘1’,256); //产生由256个1组成的字符串<br>$m=memory_get_usage(); //获取当前占用内存<br>unset($s);<br>$mm=memory_get_usage(); //unset()后再查看当前占用内存<br>echo $m-$mm;<br>?&gt;</pre><br>&nbsp;</p>
+<p>这个例子，和上面的例子几乎相同，唯一的不同是，<span id="MathJax-Element-26-Frame" class="MathJax"><span id="MathJax-Span-252" class="math"><span id="MathJax-Span-253" class="mrow"><span id="MathJax-Span-254" class="mi">s</span><span id="MathJax-Span-255" class="texatom"><span id="MathJax-Span-256" class="mrow"><span id="MathJax-Span-257" class="mo">由</span></span></span><span id="MathJax-Span-258" class="mn">256</span><span id="MathJax-Span-259" class="texatom"><span id="MathJax-Span-260" class="mrow"><span id="MathJax-Span-261" class="mo">个</span></span></span><span id="MathJax-Span-262" class="mn">1</span><span id="MathJax-Span-263" class="texatom"><span id="MathJax-Span-264" class="mrow"><span id="MathJax-Span-265" class="mo">组</span></span></span><span id="MathJax-Span-266" class="texatom"><span id="MathJax-Span-267" class="mrow"><span id="MathJax-Span-268" class="mo">成</span></span></span><span id="MathJax-Span-269" class="texatom"><span id="MathJax-Span-270" class="mrow"><span id="MathJax-Span-271" class="mo">，</span></span></span><span id="MathJax-Span-272" class="texatom"><span id="MathJax-Span-273" class="mrow"><span id="MathJax-Span-274" class="mo">即</span></span></span><span id="MathJax-Span-275" class="texatom"><span id="MathJax-Span-276" class="mrow"><span id="MathJax-Span-277" class="mo">比</span></span></span><span id="MathJax-Span-278" class="texatom"><span id="MathJax-Span-279" class="mrow"><span id="MathJax-Span-280" class="mo">第</span></span></span><span id="MathJax-Span-281" class="texatom"><span id="MathJax-Span-282" class="mrow"><span id="MathJax-Span-283" class="mo">一</span></span></span><span id="MathJax-Span-284" class="texatom"><span id="MathJax-Span-285" class="mrow"><span id="MathJax-Span-286" class="mo">个</span></span></span><span id="MathJax-Span-287" class="texatom"><span id="MathJax-Span-288" class="mrow"><span id="MathJax-Span-289" class="mo">例</span></span></span><span id="MathJax-Span-290" class="texatom"><span id="MathJax-Span-291" class="mrow"><span id="MathJax-Span-292" class="mo">子</span></span></span><span id="MathJax-Span-293" class="texatom"><span id="MathJax-Span-294" class="mrow"><span id="MathJax-Span-295" class="mo">多</span></span></span><span id="MathJax-Span-296" class="texatom"><span id="MathJax-Span-297" class="mrow"><span id="MathJax-Span-298" class="mo">了</span></span></span><span id="MathJax-Span-299" class="texatom"><span id="MathJax-Span-300" class="mrow"><span id="MathJax-Span-301" class="mo">一</span></span></span><span id="MathJax-Span-302" class="texatom"><span id="MathJax-Span-303" class="mrow"><span id="MathJax-Span-304" class="mo">个</span></span></span><span id="MathJax-Span-305" class="mn">1</span><span id="MathJax-Span-306" class="texatom"><span id="MathJax-Span-307" class="mrow"><span id="MathJax-Span-308" class="mo">，</span></span></span><span id="MathJax-Span-309" class="texatom"><span id="MathJax-Span-310" class="mrow"><span id="MathJax-Span-311" class="mo">得</span></span></span><span id="MathJax-Span-312" class="texatom"><span id="MathJax-Span-313" class="mrow"><span id="MathJax-Span-314" class="mo">到</span></span></span><span id="MathJax-Span-315" class="texatom"><span id="MathJax-Span-316" class="mrow"><span id="MathJax-Span-317" class="mo">结</span></span></span><span id="MathJax-Span-318" class="texatom"><span id="MathJax-Span-319" class="mrow"><span id="MathJax-Span-320" class="mo">果</span></span></span><span id="MathJax-Span-321" class="texatom"><span id="MathJax-Span-322" class="mrow"><span id="MathJax-Span-323" class="mo">是</span></span></span><span id="MathJax-Span-324" class="texatom"><span id="MathJax-Span-325" class="mrow"><span id="MathJax-Span-326" class="mo">：</span></span></span><span id="MathJax-Span-327" class="mn">272</span><span id="MathJax-Span-328" class="texatom"><span id="MathJax-Span-329" class="mrow"><span id="MathJax-Span-330" class="mo">。</span></span></span><span id="MathJax-Span-331" class="texatom"><span id="MathJax-Span-332" class="mrow"><span id="MathJax-Span-333" class="mo">这</span></span></span><span id="MathJax-Span-334" class="texatom"><span id="MathJax-Span-335" class="mrow"><span id="MathJax-Span-336" class="mo">是</span></span></span><span id="MathJax-Span-337" class="texatom"><span id="MathJax-Span-338" class="mrow"><span id="MathJax-Span-339" class="mo">否</span></span></span><span id="MathJax-Span-340" class="texatom"><span id="MathJax-Span-341" class="mrow"><span id="MathJax-Span-342" class="mo">可</span></span></span><span id="MathJax-Span-343" class="texatom"><span id="MathJax-Span-344" class="mrow"><span id="MathJax-Span-345" class="mo">以</span></span></span><span id="MathJax-Span-346" class="texatom"><span id="MathJax-Span-347" class="mrow"><span id="MathJax-Span-348" class="mo">说</span></span></span><span id="MathJax-Span-349" class="texatom"><span id="MathJax-Span-350" class="mrow"><span id="MathJax-Span-351" class="mo">明</span></span></span><span id="MathJax-Span-352" class="texatom"><span id="MathJax-Span-353" class="mrow"><span id="MathJax-Span-354" class="mo">，</span></span></span><span id="MathJax-Span-355" class="mi">u</span><span id="MathJax-Span-356" class="mi">n</span><span id="MathJax-Span-357" class="mi">s</span><span id="MathJax-Span-358" class="mi">e</span><span id="MathJax-Span-359" class="mi">t</span><span id="MathJax-Span-360" class="mo">(</span></span></span></span>s)已经将$s所占用的内存销毁了？<br>通过上面两个例子，我们可以得出以下结论：<br>结论一、unset()函数只能在变量值占用内存空间超过256字节时才会释放内存空间。</p>
+<p>那么是不是只要变量值超过256，使用unset就可以释放内存空间呢？我们再通过一个例子来测试一下：</p>
+<p><pre class="lang:php decode:true ">&lt;?php<br>$s=str_repeat(‘1’,256); //这和第二个例子完全相同<br>$p=&amp;$s;<br>$m=memory_get_usage();<br>unset($s); //销毁$s<br>$mm=memory_get_usage();<br>echo $p.’<br>‘;<br>echo $m-$mm;<br>?&gt;</pre><br>&nbsp;</p>
+<p>刷新页面，我们看到第一行有256个1，第二行是0，按理说我们已经销毁了<span id="MathJax-Element-27-Frame" class="MathJax"><span id="MathJax-Span-361" class="math"><span id="MathJax-Span-362" class="mrow"><span id="MathJax-Span-363" class="mi">s</span><span id="MathJax-Span-364" class="texatom"><span id="MathJax-Span-365" class="mrow"><span id="MathJax-Span-366" class="mo">，</span></span></span><span id="MathJax-Span-367" class="texatom"><span id="MathJax-Span-368" class="mrow"><span id="MathJax-Span-369" class="mo">而</span></span></span></span></span></span>p只是引用<span id="MathJax-Element-28-Frame" class="MathJax"><span id="MathJax-Span-370" class="math"><span id="MathJax-Span-371" class="mrow"><span id="MathJax-Span-372" class="mi">s</span><span id="MathJax-Span-373" class="texatom"><span id="MathJax-Span-374" class="mrow"><span id="MathJax-Span-375" class="mo">的</span></span></span><span id="MathJax-Span-376" class="texatom"><span id="MathJax-Span-377" class="mrow"><span id="MathJax-Span-378" class="mo">变</span></span></span><span id="MathJax-Span-379" class="texatom"><span id="MathJax-Span-380" class="mrow"><span id="MathJax-Span-381" class="mo">量</span></span></span><span id="MathJax-Span-382" class="texatom"><span id="MathJax-Span-383" class="mrow"><span id="MathJax-Span-384" class="mo">，</span></span></span><span id="MathJax-Span-385" class="texatom"><span id="MathJax-Span-386" class="mrow"><span id="MathJax-Span-387" class="mo">应</span></span></span><span id="MathJax-Span-388" class="texatom"><span id="MathJax-Span-389" class="mrow"><span id="MathJax-Span-390" class="mo">该</span></span></span><span id="MathJax-Span-391" class="texatom"><span id="MathJax-Span-392" class="mrow"><span id="MathJax-Span-393" class="mo">是</span></span></span><span id="MathJax-Span-394" class="texatom"><span id="MathJax-Span-395" class="mrow"><span id="MathJax-Span-396" class="mo">没</span></span></span><span id="MathJax-Span-397" class="texatom"><span id="MathJax-Span-398" class="mrow"><span id="MathJax-Span-399" class="mo">有</span></span></span><span id="MathJax-Span-400" class="texatom"><span id="MathJax-Span-401" class="mrow"><span id="MathJax-Span-402" class="mo">内</span></span></span><span id="MathJax-Span-403" class="texatom"><span id="MathJax-Span-404" class="mrow"><span id="MathJax-Span-405" class="mo">容</span></span></span><span id="MathJax-Span-406" class="texatom"><span id="MathJax-Span-407" class="mrow"><span id="MathJax-Span-408" class="mo">了</span></span></span><span id="MathJax-Span-409" class="texatom"><span id="MathJax-Span-410" class="mrow"><span id="MathJax-Span-411" class="mo">，</span></span></span><span id="MathJax-Span-412" class="texatom"><span id="MathJax-Span-413" class="mrow"><span id="MathJax-Span-414" class="mo">另</span></span></span><span id="MathJax-Span-415" class="texatom"><span id="MathJax-Span-416" class="mrow"><span id="MathJax-Span-417" class="mo">外</span></span></span><span id="MathJax-Span-418" class="texatom"><span id="MathJax-Span-419" class="mrow"><span id="MathJax-Span-420" class="mo">，</span></span></span><span id="MathJax-Span-421" class="mi">u</span><span id="MathJax-Span-422" class="mi">n</span><span id="MathJax-Span-423" class="mi">s</span><span id="MathJax-Span-424" class="mi">e</span><span id="MathJax-Span-425" class="mi">t</span><span id="MathJax-Span-426" class="mo">(</span></span></span></span>s)前后内存占用没变化！现在我们再做以下的例子：</p>
+<p><pre class="lang:php decode:true ">&lt;?php<br>$s=str_repeat(‘1’,256); //这和第二个例子完全相同<br>$p=&amp;$s;<br>$m=memory_get_usage();<br>$s=null; //设置$s为null<br>$mm=memory_get_usage();<br>echo $p.’<br>‘;<br>echo $m-$mm;<br>?&gt;</pre><br>&nbsp;</p>
+<p>现在刷新页面，我们看到，输出<span id="MathJax-Element-29-Frame" class="MathJax"><span id="MathJax-Span-427" class="math"><span id="MathJax-Span-428" class="mrow"><span id="MathJax-Span-429" class="mi">p</span><span id="MathJax-Span-430" class="texatom"><span id="MathJax-Span-431" class="mrow"><span id="MathJax-Span-432" class="mo">已</span></span></span><span id="MathJax-Span-433" class="texatom"><span id="MathJax-Span-434" class="mrow"><span id="MathJax-Span-435" class="mo">经</span></span></span><span id="MathJax-Span-436" class="texatom"><span id="MathJax-Span-437" class="mrow"><span id="MathJax-Span-438" class="mo">是</span></span></span><span id="MathJax-Span-439" class="texatom"><span id="MathJax-Span-440" class="mrow"><span id="MathJax-Span-441" class="mo">没</span></span></span><span id="MathJax-Span-442" class="texatom"><span id="MathJax-Span-443" class="mrow"><span id="MathJax-Span-444" class="mo">有</span></span></span><span id="MathJax-Span-445" class="texatom"><span id="MathJax-Span-446" class="mrow"><span id="MathJax-Span-447" class="mo">内</span></span></span><span id="MathJax-Span-448" class="texatom"><span id="MathJax-Span-449" class="mrow"><span id="MathJax-Span-450" class="mo">容</span></span></span><span id="MathJax-Span-451" class="texatom"><span id="MathJax-Span-452" class="mrow"><span id="MathJax-Span-453" class="mo">了</span></span></span><span id="MathJax-Span-454" class="texatom"><span id="MathJax-Span-455" class="mrow"><span id="MathJax-Span-456" class="mo">，</span></span></span><span id="MathJax-Span-457" class="mi">u</span><span id="MathJax-Span-458" class="mi">n</span><span id="MathJax-Span-459" class="mi">s</span><span id="MathJax-Span-460" class="mi">e</span><span id="MathJax-Span-461" class="mi">t</span><span id="MathJax-Span-462" class="mo">(</span><span id="MathJax-Span-463" class="mo">)</span><span id="MathJax-Span-464" class="texatom"><span id="MathJax-Span-465" class="mrow"><span id="MathJax-Span-466" class="mo">前</span></span></span><span id="MathJax-Span-467" class="texatom"><span id="MathJax-Span-468" class="mrow"><span id="MathJax-Span-469" class="mo">后</span></span></span><span id="MathJax-Span-470" class="texatom"><span id="MathJax-Span-471" class="mrow"><span id="MathJax-Span-472" class="mo">内</span></span></span><span id="MathJax-Span-473" class="texatom"><span id="MathJax-Span-474" class="mrow"><span id="MathJax-Span-475" class="mo">存</span></span></span><span id="MathJax-Span-476" class="texatom"><span id="MathJax-Span-477" class="mrow"><span id="MathJax-Span-478" class="mo">占</span></span></span><span id="MathJax-Span-479" class="texatom"><span id="MathJax-Span-480" class="mrow"><span id="MathJax-Span-481" class="mo">用</span></span></span><span id="MathJax-Span-482" class="texatom"><span id="MathJax-Span-483" class="mrow"><span id="MathJax-Span-484" class="mo">量</span></span></span><span id="MathJax-Span-485" class="texatom"><span id="MathJax-Span-486" class="mrow"><span id="MathJax-Span-487" class="mo">之</span></span></span><span id="MathJax-Span-488" class="texatom"><span id="MathJax-Span-489" class="mrow"><span id="MathJax-Span-490" class="mo">差</span></span></span><span id="MathJax-Span-491" class="texatom"><span id="MathJax-Span-492" class="mrow"><span id="MathJax-Span-493" class="mo">是</span></span></span><span id="MathJax-Span-494" class="mn">272</span><span id="MathJax-Span-495" class="texatom"><span id="MathJax-Span-496" class="mrow"><span id="MathJax-Span-497" class="mo">，</span></span></span><span id="MathJax-Span-498" class="texatom"><span id="MathJax-Span-499" class="mrow"><span id="MathJax-Span-500" class="mo">即</span></span></span><span id="MathJax-Span-501" class="texatom"><span id="MathJax-Span-502" class="mrow"><span id="MathJax-Span-503" class="mo">已</span></span></span><span id="MathJax-Span-504" class="texatom"><span id="MathJax-Span-505" class="mrow"><span id="MathJax-Span-506" class="mo">经</span></span></span><span id="MathJax-Span-507" class="texatom"><span id="MathJax-Span-508" class="mrow"><span id="MathJax-Span-509" class="mo">清</span></span></span><span id="MathJax-Span-510" class="texatom"><span id="MathJax-Span-511" class="mrow"><span id="MathJax-Span-512" class="mo">除</span></span></span><span id="MathJax-Span-513" class="texatom"><span id="MathJax-Span-514" class="mrow"><span id="MathJax-Span-515" class="mo">了</span></span></span><span id="MathJax-Span-516" class="texatom"><span id="MathJax-Span-517" class="mrow"><span id="MathJax-Span-518" class="mo">变</span></span></span><span id="MathJax-Span-519" class="texatom"><span id="MathJax-Span-520" class="mrow"><span id="MathJax-Span-521" class="mo">量</span></span></span><span id="MathJax-Span-522" class="texatom"><span id="MathJax-Span-523" class="mrow"><span id="MathJax-Span-524" class="mo">占</span></span></span><span id="MathJax-Span-525" class="texatom"><span id="MathJax-Span-526" class="mrow"><span id="MathJax-Span-527" class="mo">用</span></span></span><span id="MathJax-Span-528" class="texatom"><span id="MathJax-Span-529" class="mrow"><span id="MathJax-Span-530" class="mo">的</span></span></span><span id="MathJax-Span-531" class="texatom"><span id="MathJax-Span-532" class="mrow"><span id="MathJax-Span-533" class="mo">内</span></span></span><span id="MathJax-Span-534" class="texatom"><span id="MathJax-Span-535" class="mrow"><span id="MathJax-Span-536" class="mo">存</span></span></span><span id="MathJax-Span-537" class="texatom"><span id="MathJax-Span-538" class="mrow"><span id="MathJax-Span-539" class="mo">。</span></span></span><span id="MathJax-Span-540" class="texatom"><span id="MathJax-Span-541" class="mrow"><span id="MathJax-Span-542" class="mo">本</span></span></span><span id="MathJax-Span-543" class="texatom"><span id="MathJax-Span-544" class="mrow"><span id="MathJax-Span-545" class="mo">例</span></span></span><span id="MathJax-Span-546" class="texatom"><span id="MathJax-Span-547" class="mrow"><span id="MathJax-Span-548" class="mo">中</span></span></span><span id="MathJax-Span-549" class="texatom"><span id="MathJax-Span-550" class="mrow"><span id="MathJax-Span-551" class="mo">的</span></span></span></span></span></span>s=null也 可以换成unset()，如下：</p>
+<p><pre class="lang:php decode:true ">&lt;?php<br>$s=str_repeat(‘1’,256); //这和第二个例子完全相同<br>$p=&amp;$s;<br>$m=memory_get_usage();<br>unset($s); //销毁$s<br>unset($p);<br>$mm=memory_get_usage();<br>echo $p.’<br>‘;<br>echo $m-$mm;<br>?&gt;</pre><br>&nbsp;</p>
+<p>我们将<span id="MathJax-Element-30-Frame" class="MathJax"><span id="MathJax-Span-552" class="math"><span id="MathJax-Span-553" class="mrow"><span id="MathJax-Span-554" class="mi">s</span><span id="MathJax-Span-555" class="texatom"><span id="MathJax-Span-556" class="mrow"><span id="MathJax-Span-557" class="mo">和</span></span></span></span></span></span>p都使用unset()销毁，这时再看内存占用量之差也是272，说明这样也可以释放内存。那么，我们可以得到另外一条结论：<br>结论二、只有当指向该变量的所有变量（如引用变量）都被销毁后，才会释放内存。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/内存溢出/" rel="tag"># 内存溢出</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/08/git常用命令二/" rel="next" title="git常用命令二">
+                <i class="fa fa-chevron-left"></i> git常用命令二
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/08/mysql隔离级别/" rel="prev" title="ＭySQL隔离级别">
+                ＭySQL隔离级别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/08/php内存溢出解决方案/"
+     data-title="PHP内存溢出解决方案"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2017/02/08/php内存溢出解决方案/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/08/php内存溢出解决方案/"
+           data-title="PHP内存溢出解决方案" data-url="http://merlinfeng.github.io/2017/02/08/php内存溢出解决方案/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

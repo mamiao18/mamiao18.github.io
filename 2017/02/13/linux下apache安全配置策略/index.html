@@ -1,0 +1,818 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Apache,服务器," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Apache具有灵活的设置，所有Apache的安全特性都要经过周密的设计与规划，进行认真地配置才能够实现。Apache安全配置包括很多层面，有运行环境、认证与授权设置等。Apache的安装配置和运行示例如下：1、基本配置
+
+1) 修改apache的版本信息，使外部访问看到的apache信息是经过伪装或错误的，这个可以尽可能的保证apache的安全。2) 建立安全的apache的目录结构。Serv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux下apache安全配置策略">
+<meta property="og:url" content="http://merlinfeng.github.io/2017/02/13/linux下apache安全配置策略/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="Apache具有灵活的设置，所有Apache的安全特性都要经过周密的设计与规划，进行认真地配置才能够实现。Apache安全配置包括很多层面，有运行环境、认证与授权设置等。Apache的安装配置和运行示例如下：1、基本配置
+
+1) 修改apache的版本信息，使外部访问看到的apache信息是经过伪装或错误的，这个可以尽可能的保证apache的安全。2) 建立安全的apache的目录结构。Serv">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.453Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux下apache安全配置策略">
+<meta name="twitter:description" content="Apache具有灵活的设置，所有Apache的安全特性都要经过周密的设计与规划，进行认真地配置才能够实现。Apache安全配置包括很多层面，有运行环境、认证与授权设置等。Apache的安装配置和运行示例如下：1、基本配置
+
+1) 修改apache的版本信息，使外部访问看到的apache信息是经过伪装或错误的，这个可以尽可能的保证apache的安全。2) 建立安全的apache的目录结构。Serv">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2017/02/13/linux下apache安全配置策略/"/>
+
+
+
+
+
+  <title> Linux下apache安全配置策略 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2017/02/13/linux下apache安全配置策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Linux下apache安全配置策略
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-13T00:13:48+08:00">
+                2017-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WEB技术/" itemprop="url" rel="index">
+                    <span itemprop="name">WEB技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WEB技术/服务器/" itemprop="url" rel="index">
+                    <span itemprop="name">服务器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/13/linux下apache安全配置策略/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/13/linux下apache安全配置策略/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>Apache具有灵活的设置，所有Apache的安全特性都要经过周密的设计与规划，进行认真地配置才能够实现。Apache安全配置包括很多层面，有运行环境、认证与授权设置等。Apache的安装配置和运行示例如下：<br><strong>1、基本配置</strong></p>
+</blockquote>
+<p>1) 修改apache的版本信息，使外部访问看到的apache信息是经过伪装或错误的，这个可以尽可能的保证apache的安全。<br>2) 建立安全的apache的目录结构。ServerRoot  DocumentRoot  ScripAlias   Customlog  Errorlog   均放在单独的目录环境中。以上主要目录相互独立并且不存在父子逻辑关系。<br>3) ServerRoot目录只能具有管理权限用户访问；DocumentRoot能够被管理Web站点内容的用户访问和使用Apache服务器的Apache用户和Apache用户组访问；只有admin组的用户可以访问日志目录。  各个目录设置独立的权限<br>4) 禁止默认访问的存在，只对指定的目录开启访问权限。<br>5) 更改apache的默认路径，单独建立路径提供apache文件的存放<br>6) 通过使用例如“Apache DoS Evasive Maneuvers Module ”等工具来实现Apache服务器对DoS攻击的防范。其工具可以快速拒绝来自相同地址对同一URL的重复请求。<br>7) 以Nobody用户运行<br>一般情况下，Apache是由Root 来安装和运行的。如果Apache Server进程具有Root用户特权，那么它将给系统的安全构成很大的威胁，应确保Apache Server进程以最可能低的权限用户来运行。通过修改httpd.conf文件中的下列选项，以Nobody用户运行Apache 达到相对安全的目的。<br>User nobody</p>
+<p><strong>2、ServerRoot目录的权限</strong><br>为了确保所有的配置是适当的和安全的，需要严格控制Apache 主目录的访问权限，使非超级用户不能修改该目录中的内容。Apache 的主目录对应于Apache Server配置文件httpd.conf的Server Root控制项中，应为：<br>Server Root /usr/local/apache<br><strong>3、SSI的配置</strong><br>在配置文件access.conf 或httpd.conf中的确Options指令处加入Includes NO EXEC选项，用以禁用Apache Server 中的执行功能。避免用户直接执行Apache 服务器中的执行程序，而造成服务器系统的公开化。<br>Options Includes Noexec<br><strong>4、阻止用户修改系统设置</strong><br>在Apache 服务器的配置文件中进行以下的设置，阻止用户建立、修改 .htaccess文件，防止用户超越能定义的系统安全特性。</p>
+<p><pre class="lang:apache decode:true">AllowOveride None<br>Options None<br>Allow from all</pre><br>然后再分别对特定的目录进行适当的配置。<br><strong>5、改变Apache 服务器的确省访问特性</strong><br>Apache 的默认设置只能保障一定程度的安全，如果服务器能够通过正常的映射规则找到文件，那么客户端便会获取该文件，如<a href="http://local/" target="_blank" rel="external">http://local</a> host/~ root/ 将允许用户访问整个文件系统。在服务器文件中加入如下内容：</p>
+<p><pre class="lang:apache decode:true">order deny,ellow<br>Deny from all</pre><br>将禁止对文件系统的缺省访问。<br><strong>6、CGI脚本的安全考虑</strong><br>CGI脚本是一系列可以通过Web服务器来运行的程序。为了保证系统的安全性，应确保CGI的作者是可信的。对CGI而言，最好将其限制在一个特定的 目录下，如cgi-bin之下，便于管理；另外应该保证CGI目录下的文件是不可写的，避免一些欺骗性的程序驻留或混迹其中；如果能够给用户提供一个安全 性良好的CGI程序的模块作为参考，也许会减少许多不必要的麻烦和安全隐患；除去CGI目录下的所有非业务应用的脚本，以防异常的信息泄漏。<br>以上这些常用的举措可以给Apache Server 一个基本的安全运行环境，显然在具体实施上还要做进一步的细化分解，制定出符合实际应用的安全配置方案。<br>Apache Server基于主机的访问控制<br>Apache Server默认情况下的安全配置是拒绝一切访问。假定Apache Server内容存放在/usr/local/apache/share 目录下，下面的指令将实现这种设置：</p>
+<p><pre class="lang:default decode:true">Deny from all<br>Allow Override None</pre><br>则禁止在任一目录下改变认证和访问控制方法。</p>
+<blockquote>
+<p>同样，可以用特有的命令Deny、Allow指定某些用户可以访问，哪些用户不能访问，提供一定的灵活性。当Deny、Allow一起用时，用命令Order决定Deny和Allow合用的顺序，如下所示：<br>1、 拒绝某类地址的用户对服务器的访问权（Deny）<br>如：Deny from all</p>
+<p><pre class="lang:default decode:true">Deny from test.cnn.com<br>Deny from 204.168.190.13<br>Deny from 10.10.10.0/255.255.0.0</pre><br>2、 允许某类地址的用户对服务器的访问权（Allow）<br>如：Allow from all<br>Allow from test.cnn.com<br>Allow from 204.168.190.13<br>Allow from 10.10.10.0/255.255.0.0<br>Deny和Allow指令后可以输入多个变量。<br>3、简单配置实例：</p>
+<p><pre class="lang:default decode:true">Order Allow, Deny<br>Allow from all<br>Deny from www.test.com</pre><br>指想让所有的人访问Apache服务器，但不希望来自<a href="http://www.test.com/" target="_blank" rel="external">www.test.com</a>的任何访问。</p>
+<p><pre class="lang:default decode:true">Order Deny, Allow<br>Deny from all<br>Allow from test.cnn.com</pre><br>指不想让所有人访问，但希望给test.cnn.com网站的来访。<br>Apache Sever的用户认证与授权<br>概括的讲，用户认证就是验证用户的身份的真实性，如用户帐号是否在数据库中，及用户帐号所对应的密码是否正确；用户授权表示检验有效用户是否被许可访 问特定的资源。在Apache中，几乎所有的安全模块实际上兼顾这两个方面。从安全的角度来看，用户的认证和授权相当于选择性访问控制。<br><strong>建立用户的认证授权需要三个步骤：</strong><br>1、建立用户库<br>用户名和口令列表需要存在于文件（mod_auth模块）或数据库（mod_auth_dbm模块）中。基于安全的原因，该文件不能存放在文挡的根目 录下。如，存放在/usr/local/etc/httpd下的users文件，其格式与UNIX口令文件格式相似，但口令是以加密的形式存放的。应用程 序htpasswd可以用来添加或更改程序：<br>htpasswd –c /usr/local/etc/httpd/users martin<br>-c表明添加新用户，martin为新添加的用户名，在程序执行过程中，两次输入口令回答。用户名和口令添加到users文件中。产生的用户文件有如下的形式：<br>martin:WrU808BHQai36<br>jane:iABCQFQs40E8M<br>art:FadHN3W753sSU<br>第一域是用户名，第二个域是用户密码。<br>2、配置服务器的保护域<br>为了使Apache服务器能够利用用户文件中的用户名和口令信息，需要设置保护域（Realm）。一个域实际上是站点的一部分（如一个目录、文档等） 或整个站点只供部分用户访问。在相关目录下的.htaccess文件或httpd.conf ( acces.conf ) 中的段中，由AuthName来指定被保护层的域。在.htaccess文件中对用户文件有效用户的授权访问及指定域保护有如下指定：</p>
+<p><pre class="lang:default decode:true">AuthName “restricted stuff”<br>Authtype Basic<br>AuthUserFile /usr/local/etc/httpd/users<br>Require valid-user</pre><br>其中，AuthName指出了保护域的域名（Realm Name）。valid-user参数意味着user文件中的所有用户都是可用的。一旦用户输入了一个有效的用户/口令时，同一个域内的其他资源都可以利 用同样的用户/口令来进行访问，同样可以使两个不同的区域共用同样的用户/口令。<br>3、告诉服务器哪些用户拥有资源的访问权限<br>如果想将一资源的访问权限授予一组客户，可以将他们的名字都列在Require之后。最好的办法是利用组（group）文件。组的操作和标准的UNIX的组的概念类似，任一个用户可以属于一个和数个组。这样就可以在配置文件中利用Require对组赋予某些权限。如：</p>
+<p><pre class="lang:default decode:true">Require group staff<br>Require group staff admin<br>Require user adminuser</pre><br>指定了一个组、几个组或一个用户的访问权限。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Apache/" rel="tag"># Apache</a>
+          
+            <a href="/tags/服务器/" rel="tag"># 服务器</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/12/apache-配置虚拟主机/" rel="next" title="Apache 配置虚拟主机">
+                <i class="fa fa-chevron-left"></i> Apache 配置虚拟主机
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/13/从你的全世界路过，在终点等你/" rel="prev" title="从你的全世界路过，在终点等你">
+                从你的全世界路过，在终点等你 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/13/linux下apache安全配置策略/"
+     data-title="Linux下apache安全配置策略"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2017/02/13/linux下apache安全配置策略/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/13/linux下apache安全配置策略/"
+           data-title="Linux下apache安全配置策略" data-url="http://merlinfeng.github.io/2017/02/13/linux下apache安全配置策略/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

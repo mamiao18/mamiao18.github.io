@@ -1,0 +1,876 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MySQL,隔离机制," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="[caption id=”” align=”aligncenter” width=”675”] 锁管理机制[/caption]
+&amp;nbsp;
+1. 事务处理和并发性
+1.1. 基础知识和相关概念
+1 ）全部的表类型都可以使用锁，但是只有 InnoDB 和 BDB 才有内置的事务功能。
+2 ）使用 begin 开始事务，使用 commit 结束事务，中间可以使用 rollback 回滚事务。
+3 ）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入浅出MySQL事务处理和锁机制">
+<meta property="og:url" content="http://merlinfeng.github.io/2016/12/21/深入浅出mysql事务处理和锁机制/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="[caption id=”” align=”aligncenter” width=”675”] 锁管理机制[/caption]
+&amp;nbsp;
+1. 事务处理和并发性
+1.1. 基础知识和相关概念
+1 ）全部的表类型都可以使用锁，但是只有 InnoDB 和 BDB 才有内置的事务功能。
+2 ）使用 begin 开始事务，使用 commit 结束事务，中间可以使用 rollback 回滚事务。
+3 ）">
+<meta property="og:image" content="http://7xnd02.com1.z0.glb.clouddn.com/632106-20150910144933794-352735227.png">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.449Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入浅出MySQL事务处理和锁机制">
+<meta name="twitter:description" content="[caption id=”” align=”aligncenter” width=”675”] 锁管理机制[/caption]
+&amp;nbsp;
+1. 事务处理和并发性
+1.1. 基础知识和相关概念
+1 ）全部的表类型都可以使用锁，但是只有 InnoDB 和 BDB 才有内置的事务功能。
+2 ）使用 begin 开始事务，使用 commit 结束事务，中间可以使用 rollback 回滚事务。
+3 ）">
+<meta name="twitter:image" content="http://7xnd02.com1.z0.glb.clouddn.com/632106-20150910144933794-352735227.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2016/12/21/深入浅出mysql事务处理和锁机制/"/>
+
+
+
+
+
+  <title> 深入浅出MySQL事务处理和锁机制 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2016/12/21/深入浅出mysql事务处理和锁机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                深入浅出MySQL事务处理和锁机制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-21T22:06:37+08:00">
+                2016-12-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MySQL/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/21/深入浅出mysql事务处理和锁机制/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/21/深入浅出mysql事务处理和锁机制/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[caption id=”” align=”aligncenter” width=”675”]<img src="http://7xnd02.com1.z0.glb.clouddn.com/632106-20150910144933794-352735227.png" alt=""> 锁管理机制[/caption]</p>
+<p>&nbsp;</p>
+<p><strong>1. 事务处理和并发性</strong></p>
+<p>1.1. 基础知识和相关概念</p>
+<p>1 ）全部的表类型都可以使用锁，但是只有 InnoDB 和 BDB 才有内置的事务功能。</p>
+<p>2 ）使用 begin 开始事务，使用 commit 结束事务，中间可以使用 rollback 回滚事务。</p>
+<p>3 ）在默认情况下， InnoDB 表支持一致读。</p>
+<p>SQL 标准中定义了 4 个隔离级别： read uncommited ， read commited ， repeatable read ， serializable 。</p>
+<p>read uncommited 即脏读，一个事务修改了一行，另一个事务也可以读到该行。</p>
+<p>如果第一个事务执行了回滚，那么第二个事务读取的就是从来没有正式出现过的值。 ?</p>
+<p>read commited 即一致读，试图通过只读取提交的值的方式来解决脏读的问题，但是这又引起了不可重复读取的问题。</p>
+<p>一个事务执行一个查询，读取了大量的数据行。在它结束读取之前，另一个事务可能完成了对数据行的更改。当第一个事务试图再次执行同一个查询，服务器就会返回不同的结果。</p>
+<p>repeatable read 即可重复读，在一个事务对数据行执行读取或写入操作时锁定了这些数据行。</p>
+<p>但是这种方式又引发了幻想读的问题。</p>
+<p>因为只能锁定读取或写入的行，不能阻止另一个事务插入数据，后期执行同样的查询会产生更多的结果。</p>
+<p>serializable 模式中，事务被强制为依次执行。这是 SQL 标准建议的默认行为。</p>
+<p>4 ）如果多个事务更新了同一行，就可以通过回滚其中一个事务来解除死锁。</p>
+<p>5 ） MySQL 允许利用 set transaction 来设置隔离级别。</p>
+<p>6 ）事务只用于 insert 和 update 语句来更新数据表，不能用于对表结构的更改。执行一条更改表结构或 begin 则会立即提交当前的事务。</p>
+<p>7 ）所有表类型都支持表级锁，但是 MyISAM 只支持表级锁。</p>
+<p>8 ）有两种类型的表级锁：读锁和写锁。</p>
+<p>读锁是共享锁，支持并发读，写操作被锁。</p>
+<p>写锁是独占锁，上锁期间其他线程不能读表或写表。</p>
+<p>8 ）如果要支持并发读写，建议采用 InnoDB 表，因为它是采用行级锁，可以获得更多的更新性能。</p>
+<p>9 ）很多时候，可以通过经验来评估什么样的锁对应用程序更合适，不过通常很难说一个锁比别的更好，这全都要依据应用程序来决定，不同的地方可能需要不同的锁。当前 MySQL 已经支持 ISAM, MyISAM, MEMORY (HEAP) 类型表的表级锁了， BDB 表支持页级锁， InnoDB 表支持行级锁。</p>
+<p>10 ） MySQL 的表级锁都是写锁优先，而且是采用排队机制，这样不会出现死锁的情况。对于 InnoDB 和 BDB 存储引擎来说，是可能产生死锁的。这是因为 InnoDB 会自动捕获行锁， BDB 会在执行 SQL 语句时捕获页锁的，而不是在事务的开始就这么做。</p>
+<p><strong>1.2 不同锁的优缺点及选择</strong></p>
+<p><span style="background-color: #ccffff;">行级锁的优点及选择 ：</span></p>
+<p>1 ）在很多线程请求不同记录时减少冲突锁。</p>
+<p>2 ）事务回滚时减少改变数据。</p>
+<p>3 ）使长时间对单独的一行记录加锁成为可能。</p>
+<p><span style="background-color: #ccffff;">行级锁的缺点 ：</span></p>
+<p>1 ）比页级锁和表级锁消耗更多的内存。</p>
+<p>2 ）当在大量表中使用时，比页级锁和表级锁更慢，因为他需要请求更多的所资源。</p>
+<p>3 ）当需要频繁对大部分数据做 GROUP BY 操作或者需要频繁扫描整个表时，就明显的比其它锁更糟糕。</p>
+<p>4 ）使用更高层的锁的话，就能更方便的支持各种不同的类型应用程序，因为这种锁的开销比行级锁小多了。</p>
+<p>5 ）可以用应用程序级锁来代替行级锁，例如 MySQL 中的 GET_LOCK() 和 RELEASE_LOCK() 。但它们是劝告锁（原文： These are advisory locks ），因此只能用于安全可信的应用程序中。</p>
+<p>6 ）对于 InnoDB 和 BDB 表， MySQL 只有在指定用 LOCK TABLES 锁表时才使用表级锁。在这两种表中，建议最好不要使用 LOCK TABLES ，因为 InnoDB 自动采用行级锁， BDB 用页级锁来保证事务的隔离。</p>
+<p><span style="background-color: #ccffff;">表锁的优点及选择：</span></p>
+<p>1 ）很多操作都是读表。</p>
+<p>2 ）在严格条件的索引上读取和更新，当更新或者删除可以用单独的索引来读取得到时： UPDATE tbl_name SET column=value WHERE unique_key_col=key_value;DELETE FROM tbl_name WHERE unique_key_col=key_value;</p>
+<p>3 ） SELECT 和 INSERT 语句并发的执行，但是只有很少的 UPDATE 和 DELETE 语句。</p>
+<p>4 ）很多的扫描表和对全表的 GROUP BY 操作，但是没有任何写表。</p>
+<p><span style="background-color: #ccffff;">表锁的缺点：</span></p>
+<p>1 ）一个客户端提交了一个需要长时间运行的 SELECT 操作。</p>
+<p>2 ）其他客户端对同一个表提交了 UPDATE 操作，这个客户端就要等到 SELECT 完成了才能开始执行。</p>
+<p>3 ）其他客户端也对同一个表提交了 SELECT 请求。由于 UPDATE 的优先级高于 SELECT ，所以 SELECT 就会先等到 UPDATE 完成了之后才开始执行，它也在等待第一个 SELECT 操作。</p>
+<p><strong>1.3. 如何避免锁的资源竞争</strong></p>
+<p>1 ）让 SELECT 速度尽量快，这可能需要创建一些摘要表。</p>
+<p>2 ）启动 mysqld 时使用参数 –low-priority-updates 。这就会让更新操作的优先级低于 SELECT 。</p>
+<p>这种情况下，在上面的假设中，第二个 SELECT 就会在 INSERT 之前执行了，而且也无需等待第一个 SELECT 了。</p>
+<p>3 ）可以执行 SET LOW_PRIORITY_UPDATES=1 命令，指定所有的更新操作都放到一个指定的链接中去完成。</p>
+<p>4 ）用 LOW_PRIORITY 属性来降低 INSERT ， UPDATE ， DELETE 的优先级。</p>
+<p>5 ）用 HIGH_PRIORITY 来提高 SELECT 语句的优先级。</p>
+<p>6 ）从 MySQL 3.23.7 开始，可以在启动 mysqld 时指定系统变量 max_write_lock_count 为一个比较低的值，它能强制临时地提高表的插入数达到一个特定值后的所有 SELECT 操作的优先级。它允许在 WRITE 锁达到一定数量后有 READ 锁。</p>
+<p>7 ）当 INSERT 和 SELECT 一起使用出现问题时，可以转而采用 MyISAM 表，它支持并发的 SELECT 和 INSERT 操作。</p>
+<p>8 ）当在同一个表上同时有插入和删除操作时， INSERT DELAYED 可能会很有用。</p>
+<p>9 ）当 SELECT 和 DELETE 一起使用出现问题时， DELETE 的 LIMIT 参数可能会很有用。</p>
+<p>10 ）执行 SELECT 时使用 SQL_BUFFER_RESULT 有助于减短锁表的持续时间。</p>
+<p>11 ）可以修改源代码 `mysys/thr_lock.c’ ，只用一个所队列。这种情况下，写锁和读锁的优先级就一样了，这对一些应用可能有帮助。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/隔离机制/" rel="tag"># 隔离机制</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/16/linux释放内存/" rel="next" title="linux释放内存">
+                <i class="fa fa-chevron-left"></i> linux释放内存
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/23/linux服务器的基本设置/" rel="prev" title="Linux服务器的基本设置">
+                Linux服务器的基本设置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/21/深入浅出mysql事务处理和锁机制/"
+     data-title="深入浅出MySQL事务处理和锁机制"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2016/12/21/深入浅出mysql事务处理和锁机制/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/21/深入浅出mysql事务处理和锁机制/"
+           data-title="深入浅出MySQL事务处理和锁机制" data-url="http://merlinfeng.github.io/2016/12/21/深入浅出mysql事务处理和锁机制/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

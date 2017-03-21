@@ -1,0 +1,942 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="swoole,进程管理," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Swoole：重新定义PHP第一步安装扩展安装：
+下载地址
+https://github.com/swoole/swoole-src/releases
+http://pecl.php.net/package/swoole
+http://git.oschina.net/matyhtf/swoole下载源代码包后，在终端进入源码目录，执行下面的命令进行编译和安装cd swoolephpize./con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP扩展Swoole之进程管理">
+<meta property="og:url" content="http://merlinfeng.github.io/2016/12/23/php扩展swoole之进程管理/index.html">
+<meta property="og:site_name" content="风慕苗">
+<meta property="og:description" content="Swoole：重新定义PHP第一步安装扩展安装：
+下载地址
+https://github.com/swoole/swoole-src/releases
+http://pecl.php.net/package/swoole
+http://git.oschina.net/matyhtf/swoole下载源代码包后，在终端进入源码目录，执行下面的命令进行编译和安装cd swoolephpize./con">
+<meta property="og:updated_time" content="2017-03-21T07:05:08.450Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP扩展Swoole之进程管理">
+<meta name="twitter:description" content="Swoole：重新定义PHP第一步安装扩展安装：
+下载地址
+https://github.com/swoole/swoole-src/releases
+http://pecl.php.net/package/swoole
+http://git.oschina.net/matyhtf/swoole下载源代码包后，在终端进入源码目录，执行下面的命令进行编译和安装cd swoolephpize./con">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://merlinfeng.github.io/2016/12/23/php扩展swoole之进程管理/"/>
+
+
+
+
+
+  <title> PHP扩展Swoole之进程管理 | 风慕苗 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">风慕苗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">just do yourself</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://merlinfeng.github.io/2016/12/23/php扩展swoole之进程管理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Feng Qiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风慕苗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP扩展Swoole之进程管理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-23T11:37:27+08:00">
+                2016-12-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/WEB技术/" itemprop="url" rel="index">
+                    <span itemprop="name">WEB技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/WEB技术/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/23/php扩展swoole之进程管理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/23/php扩展swoole之进程管理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Swoole：重新定义PHP"><a href="#Swoole：重新定义PHP" class="headerlink" title="Swoole：重新定义PHP"></a>Swoole：重新定义PHP</h2><h2 id="第一步安装扩展"><a href="#第一步安装扩展" class="headerlink" title="第一步安装扩展"></a>第一步安装扩展</h2><p>安装：</p>
+<h2 id="下载地址"><a href="#下载地址" class="headerlink" title="下载地址"></a>下载地址</h2><ul>
+<li><a href="https://github.com/swoole/swoole-src/releases" target="_blank" rel="external">https://github.com/swoole/swoole-src/releases</a></li>
+<li><a href="http://pecl.php.net/package/swoole" target="_blank" rel="external">http://pecl.php.net/package/swoole</a></li>
+<li><a href="http://git.oschina.net/matyhtf/swoole" target="_blank" rel="external">http://git.oschina.net/matyhtf/swoole</a><br>下载源代码包后，在终端进入源码目录，执行下面的命令进行编译和安装<br><pre class="lang:default decode:true ">cd swoole<br>phpize<br>./configure<br>make<br>sudo make install</pre><br>&nbsp;</li>
+</ul>
+<p>编译安装成功后，修改php.ini加入</p>
+<p><pre class="lang:default decode:true ">extension=swoole.so</pre><br>&nbsp;</p>
+<p>&nbsp;</p>
+<p>进程管理模块</p>
+<p>查看swoole版本，在命令行里面敲</p>
+<blockquote>
+<p>php –ri swoole<br>更多的php命令行使用，大家学习 <a href="http://php.swoole.com/wiki/PHP%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0" target="_blank" rel="external">php命令行参数</a><br>ok 我们直奔主题<br><strong>怎么用</strong></p>
+</blockquote>
+<h2 id="多进程的创建"><a href="#多进程的创建" class="headerlink" title="多进程的创建"></a>多进程的创建</h2><p>不多说，直接上代码</p>
+<p><pre class="lang:php decode:true">&lt;?php<br>$worker_num =2;//创建的进程数<br>for($i=0;$i&lt;$worker_num ; $i++){<br>    $process = new swoole_process(‘callback_function_we_write’);<br>    $pid = $process-&gt;start();<br>    echo PHP_EOL . $pid;//<br>}<br>function callback_function_we_write(swoole_process $worker){<br>    echo  PHP_EOL;<br>    var_dump($worker);<br>    echo  PHP_EOL;<br>}</pre><br>&nbsp;</p>
+<p>运行结果如下</p>
+<p><pre class="lang:default decode:true">5445<br>object(swoole_process)#1 (3) {<br>  [“pipe”]=&gt;<br>  int(3)<br>  [“callback”]=&gt;<br>  string(26) “callback_function_we_write”<br>  [“pid”]=&gt;<br>  int(5445)<br>}</pre></p>
+<p>5446<br>object(swoole_process)#2 (3) {<br>  [“pipe”]=&gt;<br>  int(5)<br>  [“callback”]=&gt;<br>  string(26) “callback_function_we_write”<br>  [“pid”]=&gt;<br>  int(5446)<br>}<br><br>&nbsp;</p>
+<p>可以看到，我们使用 new swoole_process 创建进程，这里需要一个参数，也就是回调函数<br>当我们使用 $process-&gt;start()执行后，返回这个进程的pid ，也就是 $pid.<br>此时子进程启动，调用回调函数，并传一个参数 也就是 swoole_process 类型的 $worker<br>我故意输出了 $worker 看看里面有什么，结果有三个属性</p>
+<blockquote>
+<p>pipe 进程的管道id 这个等说道进程间通信的时候再聊</p>
+<p>pid 就是当前子进程的 pid 啦</p>
+<p>callback 这个是我们自己写的回调函数名<br>到这里，我们就可以用多进程玩耍了， 比如，我们可以测试多进程的运行速度</p>
+<p><pre class="lang:php decode:true ">&lt;?php<br>echo PHP_EOL . time() ;<br>$worker_num =3;//创建的进程数<br>for($i=0;$i&lt;$worker_num ; $i++){<br>    $process = new swoole_process(‘callback_function_we_write’);<br>    $pid = $process-&gt;start();<br>}</pre></p>
+</blockquote>
+<p>function callback_function_we_write(swoole_process $worker){<br>    for($i=0;$i<100000000;$i++){} echo="" php_eol="" .="" time()="" ;="" }<="" pre=""><br>&nbsp;</100000000;$i++){}></p>
+<p>我本机运行结果</p>
+<blockquote>
+<p>1435563435 // 开始时间</p>
+<p>1435563438 //进程1 结束时间</p>
+<p>1435563440 //进程2 结束时间</p>
+<p>1435563440 //进程3 结束时间<br>算三次 用了5s （其实一般是4s）</p>
+</blockquote>
+<p>再玩一次</p>
+<p><pre class="lang:php decode:true">&lt;?php<br>echo PHP_EOL . time() ;<br>for($i=0;$i<100000000;$i++){} for($i="0;$i<100000000;$i++){}" echo="" php_eol="" .="" time()="" ;<="" pre=""><br>&nbsp;</100000000;$i++){}></pre></p>
+<p>我本机运行结果</p>
+<blockquote>
+<p>1435563704 1435563712<br>这次用了8s</p>
+</blockquote>
+<p>做了这些，我想说明一个问题</p>
+<blockquote>
+<p><strong>并不是说 单进程 要花8s 做完的活，我们用3个进程就能将时间缩小三倍了</strong><br>嘛，因为这是我以前的误区</p>
+</blockquote>
+<p><strong>多进程还可以这样玩</strong></p>
+<p><pre class="lang:php decode:true">&lt;?php<br>$funcMap=array(‘methodOne’ , ‘methodTwo’ ,’methodThree’ );<br>$worker_num =3;//创建的进程数</pre></p>
+<p>for($i=0;$i&lt;$worker_num ; $i++){<br>    $process = new swoole_process($funcMap[$i]);<br>    $pid = $process-&gt;start();<br>    sleep(2);<br>}</p>
+<p> while(1){<br>            $ret = swoole_process::wait();<br>            if ($ret){// $ret 是个数组 code是进程退出状态码，<br>                $pid = $ret[‘pid’];<br>                echo PHP_EOL.”Worker Exit, PID=” . $pid . PHP_EOL;<br>            }else{<br>                break;<br>            }<br>}</p>
+<p>function methodOne(swoole_process $worker){// 第一个处理<br>    echo $worker-&gt;callback .PHP_EOL;<br>}</p>
+<p>function methodTwo(swoole_process $worker){// 第二个处理<br>    echo $worker-&gt;callback .PHP_EOL;<br>}</p>
+<p>function methodThree(swoole_process $worker){// 第三个处理<br>    echo $worker-&gt;callback .PHP_EOL;<br>}<br>&nbsp;</p>
+<p>我多加的sleep是为了运行时看得更清楚，你也可以去掉<br>这里我使用了 swoole_process::wait() <a href="http://wiki.swoole.com/wiki/page/220.html" target="_blank" rel="external">详解</a><br>目的是当子进程结束后，主进程能够知道。</p>
+<p>我们来想一个情景 过节了，妈妈要做饭，一看厨房里缺了 油，盐，糖，味精，十三香。于是吩咐儿子去小卖部买点回来。厨房这边也不能闲着，老妈要继续洗菜，切菜。等到调料买回来了，菜也洗好，切好了，开始炒，这边炒好了一个菜，就要立刻送到餐桌上。</p>
+<p>这个情景里面，显然使用了多进程，并且各进程做的不是同样的事情。当子进程都完成了，主进程开始继续业务。</p>
+<p>现在有了一个问题，就拿上面的情景来说，儿子去买调味料，如果发现盐没有了，或者钱不够了怎么办，如何与妈妈联系呢？ 这就是下面要说的 <strong>进程间的通信</strong></p>
+<h2 id="进程间的通信"><a href="#进程间的通信" class="headerlink" title="进程间的通信"></a>进程间的通信</h2><p>Process 的通信方式有两种</p>
+<blockquote>
+<pre class="lang:default decode:true">管道
+
+swoole_process->write(string $data);
+
+swoole_process->read(int $buffer_size=8192);
+
+消息队列
+
+swoole_process->useQueue();
+
+swoole_process->push(string $data);
+
+swoole_process->pop(int $maxsize = 8192);</pre>
+
+<p>&nbsp;<br>我们先说说管道</p>
+</blockquote>
+<h2 id="管道通讯"><a href="#管道通讯" class="headerlink" title="管道通讯"></a>管道通讯</h2><p>这里我们要再次的提及进程的创建 new swoole_process<br>大家请看这里 <a href="http://wiki.swoole.com/wiki/page/214.html" target="_blank" rel="external">进程的创建</a><br>第一个参数是回调函数，不说了<br>第二个参数含义等会我会结合例子来说<br>第三个参数是默认的 true，意思是创建管道，大家还记得回调函数里我特意将$worker输出看到的内容吗？</p>
+<p><pre class="lang:default decode:true">object(swoole_process)#1 (3) {<br>  [“pipe”]=&gt;<br>  int(3)<br>  [“callback”]=&gt;<br>  string(26) “callback_function_we_write”<br>  [“pid”]=&gt;<br>  int(5445)<br>}</pre><br>&nbsp;</p>
+<p>关键是这里的 <strong>pipe</strong> 这个就是本进程的管道id<br>我们可以这样理解</p>
+<blockquote>
+<p>每次创建一个进程后，就会随之创建一个管道，主进程想和哪一个进程通信，就向那个进程的管道写入/读取数据。<br>ok，我们看看代码</p>
+<p><pre class="lang:php decode:true">&lt;?php<br>$redirect_stdout = false;// 重定向输出  ; 这个参数用途等会我们看效果<br>$worker_num = 2;//进程数量<br>$workers = [];//存放进程用的<br>for($i = 0; $i &lt; $worker_num; $i++){<br>    $process = new swoole_process(‘workerFunc’,$redirect_stdout );<br>    $pid = $process-&gt;start();<br>    $workers[$pid] = $process;//将每一个进程的句柄存起来<br>}<br>// 这里是主进程哦。<br>foreach($workers as $pid =&gt; $process){// $process 是子进程的句柄<br>    $process-&gt;write(“hello worker[$pid]\n”);//子进程句柄向自己管道里写内容                  $process-&gt;write($data);<br>    echo “From Worker: “.$process-&gt;read();//子进程句柄从自己的管道里面读取信息    $process-&gt;read();<br>    echo PHP_EOL.PHP_EOL;<br> }</pre></p>
+</blockquote>
+<p>function workerFunc(swoole_process $worker){//这里是子进程哦<br>    $recv = $worker-&gt;read();<br>    echo PHP_EOL. “From Master: $recv\n”;<br>    //send data to master<br>    $worker-&gt;write(“hello master , this pipe  is “. $worker-&gt;pipe .”;  this  pid  is “.$worker-&gt;pid.”\n”);<br>    sleep(2);<br>    $worker-&gt;exit(0);<br>}<br>&nbsp;</p>
+<p>贴上运行结果</p>
+<p><pre class="lang:default decode:true ">From Master: hello worker[8205]</pre></p>
+<p>From Worker: hello master , this pipe  is 3;  this  pid  is 8205</p>
+<p>From Master: hello worker[8206]</p>
+<p>From Worker: hello master , this pipe  is 5;  this  pid  is 8206<br>&nbsp;</p>
+<p>喔，通讯是这样的。<br>首先 将所有的子进程的句柄都存到 主进程的一个数组里，数组下标就是pid。<br>当主进程想和哪个进程通讯，就使用那个句柄向对应管道里面 写/读 数据，这样就实现了进程间的通讯。</p>
+<p>接着，我们稍微改一下，看看运行效果</p>
+<p><pre class="lang:php decode:true">$redirect_stdout = true;// 重定向输出  注意 这次我改成 true 了，其他没变<br>$worker_num = 2;//进程数量<br>$workers = [];//存放进程用的<br>for($i = 0; $i &lt; $worker_num; $i++){<br>    $process = new swoole_process(‘workerFunc’,$redirect_stdout );<br>    $pid = $process-&gt;start();<br>    $workers[$pid] = $process;//将每一个进程的句柄存起来<br>}</pre></p>
+<p>// 这里是主进程哦。<br>foreach($workers as $pid =&gt; $process){// $process 是子进程的句柄<br>    $process-&gt;write(“hello worker[$pid]\n”);//子进程句柄向自己管道里写内容                $process-&gt;write($data);<br>    echo “From Worker: “.$process-&gt;read();//子进程句柄从自己的管道里面读取信息    $process-&gt;read();<br>    echo PHP_EOL.PHP_EOL;<br> }</p>
+<p>function workerFunc(swoole_process $worker){//这里是子进程哦<br>    $recv = $worker-&gt;read();<br>    echo PHP_EOL. “From Master: $recv\n”;<br>    //send data to master<br>    $worker-&gt;write(“hello master , this pipe  is “. $worker-&gt;pipe .”;  this  pid  is “.$worker-&gt;pid.”\n”);<br>    sleep(2);<br>    $worker-&gt;exit(0);<br>}<br>&nbsp;</p>
+<p>输出结果</p>
+<p><pre class="lang:default decode:true">From Worker:<br>From Master: hello worker[8007]</pre></p>
+<p>From Worker:<br>From Master: hello worker[8008]<br>&nbsp;</p>
+<p>诶，不一样了有没有。我们再看看创建进程时第二个参数的说明</p>
+<blockquote>
+<p>$redirect_stdin_stdout，重定向子进程的标准输入和输出。 启用此选项后，在进程内echo将不是打印屏幕，而是写入到管道。读取键盘输入将变为从管道中读取数据。 默认为阻塞读取。<br>我来说明一下，因为创建的时候指定了true，子进程中echo的内容就到了管道里面，而不是打印在屏幕上（这一点类似于php的ob缓存机制，大家想象一下）<br>前面说了，进程的通讯是通过从管道里面读/写数据实现的，而 子进程 里 echo 的内容被 重定向到管道里面了，所以，主进程从管道里读到的内容，就是 子进程中 echo 的 内容。<br>也就造成了上面的 输出结果。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/swoole/" rel="tag"># swoole</a>
+          
+            <a href="/tags/进程管理/" rel="tag"># 进程管理</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/23/linux服务器的基本设置/" rel="next" title="Linux服务器的基本设置">
+                <i class="fa fa-chevron-left"></i> Linux服务器的基本设置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/27/php-命令行下的世界/" rel="prev" title="PHP 命令行下的世界">
+                PHP 命令行下的世界 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/23/php扩展swoole之进程管理/"
+     data-title="PHP扩展Swoole之进程管理"
+     data-content=""
+     data-url="http://merlinfeng.github.io/2016/12/23/php扩展swoole之进程管理/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/23/php扩展swoole之进程管理/"
+           data-title="PHP扩展Swoole之进程管理" data-url="http://merlinfeng.github.io/2016/12/23/php扩展swoole之进程管理/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/10216292?v=3&s=460"
+               alt="Feng Qiang" />
+          <p class="site-author-name" itemprop="name">Feng Qiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">认真，你就赢了！</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/your-user-name" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/your-user-name" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/your-user-name" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://douban.com/people/your-user-name" target="_blank" title="douban">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  douban
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/your-user-name" target="_blank" title="zhihu">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  zhihu
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Swoole：重新定义PHP"><span class="nav-number">1.</span> <span class="nav-text">Swoole：重新定义PHP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一步安装扩展"><span class="nav-number">2.</span> <span class="nav-text">第一步安装扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载地址"><span class="nav-number">3.</span> <span class="nav-text">下载地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程的创建"><span class="nav-number">4.</span> <span class="nav-text">多进程的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程间的通信"><span class="nav-number">5.</span> <span class="nav-text">进程间的通信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管道通讯"><span class="nav-number">6.</span> <span class="nav-text">管道通讯</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Feng Qiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"merlinfeng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
